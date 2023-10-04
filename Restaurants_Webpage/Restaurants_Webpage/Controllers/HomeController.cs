@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Restaurants_Webpage.Models;
 using Restaurants_Webpage.Utils;
@@ -30,7 +32,7 @@ namespace Restaurants_Webpage.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Login(string login, string password) 
+        public async Task<IActionResult> Login(string login, string password)
         {
             string loginUrl = "https://localhost:7042/api/Users/login";
 
@@ -46,19 +48,17 @@ namespace Restaurants_Webpage.Controllers
                 {
                     HttpContext.Response.Cookies.Append("AccessToken", jwt.AccessToken);
                     HttpContext.Response.Cookies.Append("RefreshToken", jwt.RefreshToken);
-                    return RedirectToAction("Privacy", "Home");   
+                    return RedirectToAction("Privacy", "Home");
                 }
-                else 
+                else
                 {
                     //invalid login/password
+                    //handling unknown error
                     return RedirectToAction("Index", "Home");
                 }
 
             }
-            else 
-            {
-                //handling unknown error
-            }
+            //invalid login/password
             return RedirectToAction("Index", "Home");
         }
 
