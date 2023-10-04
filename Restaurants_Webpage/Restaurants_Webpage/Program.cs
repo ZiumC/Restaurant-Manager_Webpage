@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Restaurants_Webpage.Middlewares;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,7 @@ builder.Services.AddAuthentication(options =>
 }).AddJwtBearer(options =>
 {
     var issuer = builder.Configuration["ApplicationSettings:JwtSettings:Issuer"];
+    var audience = builder.Configuration["ApplicationSettings:JwtSettings:Audience"];
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -24,8 +27,8 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ClockSkew = TimeSpan.FromMinutes(1),
         ValidIssuer = issuer,
-        ValidAudience = issuer,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["ApplicationSettings:JwtSettings:SecretSignatureKey"]))
+        ValidAudience = audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["ApplicationSettings:JwtSettings:SecretSignatureKey"])),
     };
 });
 
@@ -46,6 +49,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseMiddleware<CookieAuthorizeMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
