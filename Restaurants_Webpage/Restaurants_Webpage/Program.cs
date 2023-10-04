@@ -25,10 +25,23 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ClockSkew = TimeSpan.FromMinutes(1),
+        ClockSkew = TimeSpan.Zero,
         ValidIssuer = issuer,
         ValidAudience = audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["ApplicationSettings:JwtSettings:SecretSignatureKey"])),
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+            {
+                context.Response.Headers.Add("Token-expired", "true");
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -49,8 +62,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseMiddleware<CookieAuthorizeMiddleware>();
+app.UseMiddleware<AuthorizeCookieMiddleware>();
 app.UseAuthentication();
+app.UseMiddleware<RedirectToLogintMiddleware>();
 app.UseAuthorization();
 
 app.MapControllerRoute(

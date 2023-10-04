@@ -8,20 +8,22 @@ using System.Threading.Tasks;
 namespace Restaurants_Webpage.Middlewares
 {
     // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
-    public class CookieAuthorizeMiddleware
+    public class AuthorizeCookieMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly string _cookieName = "AccessToken";
 
-        public CookieAuthorizeMiddleware(RequestDelegate next)
+        public AuthorizeCookieMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
         public Task Invoke(HttpContext httpContext)
         {
-            string cookieName = "AccessToken";
-            var authenticationCookie = httpContext.Request.Cookies[cookieName];
+            var authenticationCookie = httpContext.Request.Cookies[_cookieName];
 
+            Console.WriteLine(authenticationCookie);
+            
             if (authenticationCookie != null) 
             {
                 httpContext.Request.Headers.Append("Authorization", "Bearer " + authenticationCookie);
@@ -36,7 +38,7 @@ namespace Restaurants_Webpage.Middlewares
     {
         public static IApplicationBuilder UseCookieAuthorizeMiddleware(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<CookieAuthorizeMiddleware>();
+            return builder.UseMiddleware<AuthorizeCookieMiddleware>();
         }
     }
 }
