@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Restaurants_Webpage.Models;
@@ -23,8 +24,8 @@ namespace Restaurants_Webpage.Middlewares
             var authenticationCookie = httpContext.Request.Cookies[_cookieName];
 
             Console.WriteLine(authenticationCookie);
-            
-            if (authenticationCookie != null) 
+
+            if (authenticationCookie != null)
             {
                 httpContext.Request.Headers.Append("Authorization", "Bearer " + authenticationCookie);
             }

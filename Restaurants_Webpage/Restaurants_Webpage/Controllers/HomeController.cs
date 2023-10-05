@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Restaurants_Webpage.Models;
 using Restaurants_Webpage.Utils;
@@ -14,7 +10,6 @@ namespace Restaurants_Webpage.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly HttpClient httpClient = new HttpClient();
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -27,7 +22,7 @@ namespace Restaurants_Webpage.Controllers
         }
 
         [Authorize(Roles = UserRolesUtility.Client)]
-        public IActionResult Privacy()
+        public IActionResult Details()
         {
             return View();
         }
@@ -36,9 +31,8 @@ namespace Restaurants_Webpage.Controllers
         {
             string loginUrl = "https://localhost:7042/api/Users/login";
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(new HttpMethod("POST"), loginUrl);
-            requestMessage.Content = JsonContent.Create(new { loginOrEmail = login, password = password });
-            HttpResponseMessage response = httpClient.SendAsync(requestMessage).Result;
+            var body = JsonContent.Create(new { loginOrEmail = login, password = password });
+            var response = await HttpRequestUtility.SendRequestAsync(loginUrl, Utils.HttpMethods.POST, body);
 
             if (response.IsSuccessStatusCode)
             {
@@ -48,7 +42,7 @@ namespace Restaurants_Webpage.Controllers
                 {
                     HttpContext.Response.Cookies.Append("AccessToken", jwt.AccessToken);
                     HttpContext.Response.Cookies.Append("RefreshToken", jwt.RefreshToken);
-                    return RedirectToAction("Privacy", "Home");
+                    return RedirectToAction("Details", "Home");
                 }
                 else
                 {
@@ -59,7 +53,7 @@ namespace Restaurants_Webpage.Controllers
 
             }
             //invalid login/password
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "User");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

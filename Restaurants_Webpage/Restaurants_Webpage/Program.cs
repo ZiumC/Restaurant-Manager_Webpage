@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Restaurants_Webpage.Middlewares;
+using System.Net;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,9 +62,18 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// on authentication fail, this will redirect to login page
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+    if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+    {
+        response.Redirect("/User/Login");
+    }
+});
+
 app.UseMiddleware<AuthorizeCookieMiddleware>();
 app.UseAuthentication();
-app.UseMiddleware<RedirectToLogintMiddleware>();
 app.UseAuthorization();
 
 app.MapControllerRoute(
