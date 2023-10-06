@@ -1,6 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Login";
+
+    var errorMessage = TempData["LoginError"];
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +14,7 @@
 </head>
 <body>
     <div class="background-page text-center">
-        <form action="" method="post">
+        <form action="/accounts/login" method="post">
             <div class="table-container">
                 <table class="login-table">
                     <tr>
@@ -38,15 +41,18 @@
                     <tr>
                         <td align="center">
                             <div class="input-group width-medium">
-                                <input class ="form-control" type="password" placeholder="Enter Password" name="password" required>
+                                <input class="form-control" type="password" placeholder="Enter Password" name="password" required>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <label class="error-text" hidden="hidden">
-                                asdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdas
-                            </label>
+                            @if (errorMessage != null)
+                            {
+                                <label class="error-text">
+                                    @Html.Raw(@errorMessage)
+                                </label>
+                            }
                         </td>
                     </tr>
                     <tr>
@@ -59,3 +65,4 @@
         </form>
     </div>
 </body>
+</html>

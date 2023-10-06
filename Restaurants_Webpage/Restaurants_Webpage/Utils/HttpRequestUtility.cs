@@ -7,7 +7,7 @@ namespace Restaurants_Webpage.Utils
     {
         private static readonly HttpClient httpClient = new HttpClient();
 
-        public static async Task<HttpResponseMessage> SendRequestAsync(string url, HttpMethods method, JsonContent jsonBody)
+        public static async Task<HttpResponseMessage?> SendRequestAsync(string url, HttpMethods method, JsonContent jsonBody)
         {
             string methodType = "";
             switch (method)
@@ -46,7 +46,17 @@ namespace Restaurants_Webpage.Utils
                 requestMessage.Content = jsonBody;
             }
 
-            return await httpClient.SendAsync(requestMessage);
+            HttpResponseMessage responseMessage = null;
+            try
+            {
+                responseMessage = await httpClient.SendAsync(requestMessage);
+            } 
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return responseMessage;
         }
     }
 }

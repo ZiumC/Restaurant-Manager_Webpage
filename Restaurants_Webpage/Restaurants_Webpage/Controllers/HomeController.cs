@@ -31,6 +31,8 @@ namespace Restaurants_Webpage.Controllers
         {
             string loginUrl = "https://localhost:7042/api/Users/login";
 
+            Console.WriteLine(login);
+
             var body = JsonContent.Create(new { loginOrEmail = login, password = password });
             var response = await HttpRequestUtility.SendRequestAsync(loginUrl, Utils.HttpMethods.POST, body);
 
