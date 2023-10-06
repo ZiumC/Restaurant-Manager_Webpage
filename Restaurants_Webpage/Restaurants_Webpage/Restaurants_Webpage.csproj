@@ -9,9 +9,14 @@
 
   <ItemGroup>
     <None Remove="Views\User\Login.cshtml.css" />
+    <None Remove="Views\User\Register.cshtml.css" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Views\User\Register.cshtml.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="Views\User\Login.cshtml.css">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

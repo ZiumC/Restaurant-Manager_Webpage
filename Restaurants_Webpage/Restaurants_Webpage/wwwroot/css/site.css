@@ -76,3 +76,37 @@ div.input-group input {
     border-width: 0.4ex;
     border-color: #5A5A5A;
 }
+
+.table-container {
+    margin-left: 5ex;
+    margin-right: 5ex;
+    margin-top: 2ex;
+    margin-bottom: 2ex;
+}
+
+.table-md {
+    width: 50%;
+    border-collapse: separate;
+    border-spacing: 0 2ex;
+    margin-left: auto;
+    margin-right: auto;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: normal;
+}
+
+.table-header {
+    font-size: 3ex;
+}
+
+.table-width-medium {
+    width: 60%;
+}
+
+.btn-medium {
+    width: 15ex;
+}
+
+.error-text {
+    color: red;
+}

@@ -1,24 +1,113 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Register";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <form action="/home/Login" method="post">
-        <div class="container">
-            <label for="uname"><b>Username</b></label>
-            <input type="text" placeholder="Enter Username" name="login" required>
-
-            <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="password" required>
-
-            <button type="submit">Login</button>
-        </div>
-
-        <div class="container" style="background-color:#f1f1f1">
-            <button type="button" class="cancelbtn">Cancel</button>
-            <span class="psw">Forgot <a href="#">password?</a></span>
-        </div>
-    </form>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="/js/register.js"></script>
+</head>
+<body>
+    <div class="background-page text-center">
+        <form action="/accounts/register" method="post">
+            <div class="table-container">
+                <table class="table-md">
+                    <tr>
+                        <td class="table-header">
+                            <b>
+                                Login
+                            </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group table-width-medium">
+                                <input class="form-control" type="text" placeholder="Enter Username" name="login" required>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-header">
+                            <b>
+                                E-mail
+                            </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group table-width-medium">
+                                <input class="form-control" type="text" placeholder="Enter e-mail" name="email" required>
+                            </div>
+                        </td>
+                    </tr>
+                    <td class="table-header">
+                        <b>
+                            Password
+                        </b>
+                    </td>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group table-width-medium">
+                                <input class="form-control" type="password" placeholder="Enter Password" name="password1" required>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group table-width-medium">
+                                <input class="form-control" type="password" placeholder="Reenter Password" name="password2" required>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <input type="checkbox" id="registerMeAsEmployee" name="registerMeAsEmployee">
+                            <label for="registerMeAsEmployee">Register me as an employee</label><br>
+                        </td>
+                    </tr>
+                    <td class="table-header">
+                        <b>
+                            PESEL
+                        </b>
+                    </td>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group table-width-medium">
+                                <input class="form-control" type="text" placeholder="Enter PESEL" name="pesel">
+                            </div>
+                        </td>
+                    </tr>
+                    <td class="table-header">
+                        <b>
+                            Hired date
+                        </b>
+                    </td>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group table-width-medium">
+                                <input class="form-control" type="date" name="hiredDate">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="error-text">
+                                asdasda
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" value="Register" class="btn btn-success btn-medium" id="submit-register">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
