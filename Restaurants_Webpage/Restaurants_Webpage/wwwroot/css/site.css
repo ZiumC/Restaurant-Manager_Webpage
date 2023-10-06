@@ -1,18 +1,72 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    animation: opacity-animation 0.1s;
+    animation-timing-function: linear;
+}
+
+.container {
+    max-width: 80%;
+}
+
+.rightside-container {
+    height: 100%;
+    width: 100%;
+}
+
+.leftside-container {
+    height: 100%;
+    width: 100%;
+}
+
+.fixed-background {
+    animation: banner 0.3s;
+    background-image: url(../images/cover.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 38vh;
+    background-size: cover;
+    background-attachment: fixed;
+    margin-bottom: 2ex;
+}
+
+.title-text {
+    margin-left: 3ex;
+}
+
+.line-black {
+    border-top: 0.3ex solid #5A5A5A;
+    margin-left: 5ex;
+    margin-right: 5ex;
+    margin-bottom: 2ex;
+}
+
+.footer-line-green {
+    border-top: 0.3ex solid #2C632B;
+    margin-bottom: 4ex;
+    margin-left: 5ex;
+    margin-right: 5ex;
+}
+
+.footer-text {
+    font-size: 3ex;
+}
+
+.background-page {
+    background-color: #E7E7E7;
+    padding-top: 2ex;
+    padding-bottom: 3ex;
 }
