@@ -70,3 +70,9 @@ body {
     padding-top: 2ex;
     padding-bottom: 3ex;
 }
+
+div.input-group input {
+    border-radius: 2ex;
+    border-width: 0.4ex;
+    border-color: #5A5A5A;
+}

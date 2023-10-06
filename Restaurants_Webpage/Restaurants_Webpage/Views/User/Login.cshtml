@@ -11,19 +11,50 @@
 </head>
 <body>
     <div class="background-page text-center">
-        <div class=""></div>
         <form action="" method="post">
-            <div class="container">
-                <label for="uname"><b>Username</b></label>
-                <input type="text" placeholder="Enter Username" name="login" required>
-
-                <label for="psw"><b>Password</b></label>
-                <input type="password" placeholder="Enter Password" name="password" required>
-
-                <button type="submit">Login</button>
-            </div>
-
-            <div class="container" style="background-color:#f1f1f1">
+            <div class="table-container">
+                <table class="login-table">
+                    <tr>
+                        <td class="table-header">
+                            <b>
+                                Login
+                            </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group width-medium">
+                                <input class="form-control" type="text" placeholder="Enter Username" name="login" required>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-header">
+                            <b>
+                                Password
+                            </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group width-medium">
+                                <input class ="form-control" type="password" placeholder="Enter Password" name="password" required>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="error-text" hidden="hidden">
+                                asdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdasasdasdadasdas
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" value="Login" class="btn btn-success btn-medium">
+                        </td>
+                    </tr>
+                </table>
             </div>
         </form>
     </div>
