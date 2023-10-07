@@ -18,6 +18,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _loginRegex;
         private readonly string _peselRegex;
         private readonly string _loginUrl;
+        private readonly string _registerUrl;
 
         public AccountsController(IConfiguration config)
         {
@@ -29,10 +30,11 @@ namespace Restaurants_Webpage.Controllers
             string passMaxLength = _config["ApplicationSettings:UserSettings:Password:MaxLength"];
 
             string emailRegex = _config["ApplicationSettings:DataValidation:EmailRegex"];
-            string loginlRegex = _config["ApplicationSettings:DataValidation:LoginRegex"];
+            string loginRegex = _config["ApplicationSettings:DataValidation:LoginRegex"];
             string peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
 
             string loginUrl = _config["Endpoints:POST:Users:Login"];
+            string registerUrl = _config["Endpoints:POST:Users:Register"];
 
             try
             {
@@ -51,9 +53,23 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Email regex can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(loginRegex))
+                {
+                    throw new Exception("Login regex can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(peselRegex))
+                {
+                    throw new Exception("Pesel regex can't be empty");
+                }
+
                 if (string.IsNullOrEmpty(loginUrl))
                 {
                     throw new Exception("Login url can't be empty");
+                }
+                if (string.IsNullOrEmpty(registerUrl))
+                {
+                    throw new Exception("Register url can't be empty");
                 }
 
                 _loginMinLength = int.Parse(loginMinLength);
@@ -62,10 +78,11 @@ namespace Restaurants_Webpage.Controllers
                 _passMaxLength = int.Parse(passMaxLength);
 
                 _emailRegex = emailRegex;
-                _loginRegex = loginlRegex;
+                _loginRegex = loginRegex;
                 _peselRegex = peselRegex;
 
                 _loginUrl = loginUrl;
+                _registerUrl = registerUrl;
             }
             catch (Exception ex)
             {
@@ -108,6 +125,7 @@ namespace Restaurants_Webpage.Controllers
                 {
                     HttpContext.Response.Cookies.Append("AccessToken", jwt.AccessToken);
                     HttpContext.Response.Cookies.Append("RefreshToken", jwt.RefreshToken);
+                    TempData["LoginError"] = null;
                     return RedirectToAction("details", "home");
                 }
                 else
@@ -130,7 +148,7 @@ namespace Restaurants_Webpage.Controllers
             return RedirectToAction("login", "user");
         }
 
-        public IActionResult Register(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterModel model)
         {
             if (model.login.Length < _loginMinLength || model.login.Length > _loginMaxLength)
             {
@@ -180,13 +198,47 @@ namespace Restaurants_Webpage.Controllers
                     return RedirectToAction("register", "user");
                 }
 
-                if ((DateTime.Now.Date - model.hiredDate).TotalDays/365 >= 100)
+                if ((DateTime.Now.Date - model.hiredDate).TotalDays / 365 >= 100)
                 {
                     TempData["RegisterError"] = $"<b>Hired date</b> is invalid.";
                     return RedirectToAction("register", "user");
                 }
             }
-            return RedirectToAction("index", "home");
+
+            var body = JsonContent.Create(new
+            {
+                login = model.login,
+                email = model.email,
+                password = model.password1,
+                registerMeAsEmployee = registerEmployee != null && registerEmployee.Equals("on") ? true : false,
+                pesel = model.pesel,
+                hiredDate = model.hiredDate
+            });
+            var response = await HttpRequestUtility.SendRequestAsync(_registerUrl, Utils.HttpMethods.POST, body);
+
+            if (response == null)
+            {
+                TempData["RegisterError"] = "<b>Unable connect to server</b>. You can't register to the system.";
+                return RedirectToAction("register", "user");
+            }
+
+            string responseMessage = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["SuccessMessage"] = "Correctly registered!";
+                TempData["RegisterError"] = null;
+                return RedirectToAction("index", "home");
+            }
+            else if (!string.IsNullOrEmpty(responseMessage))
+            {
+                TempData["RegisterError"] = responseMessage;
+            }
+            else 
+            {
+                TempData["RegisterError"] = "Unable to register an new account";
+            }
+            return RedirectToAction("register", "user");
+
         }
     }
 }
