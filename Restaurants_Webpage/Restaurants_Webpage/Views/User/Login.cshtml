@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Login";
 
-    var errorMessage = TempData["LoginError"];
+    var loginError = TempData["LoginError"];
 }
 
 <!DOCTYPE html>
@@ -47,10 +47,10 @@
                     </tr>
                     <tr>
                         <td>
-                            @if (errorMessage != null)
+                            @if (loginError != null)
                             {
                                 <label class="error-text">
-                                    @Html.Raw(@errorMessage)
+                                    @Html.Raw(loginError)
                                 </label>
                             }
                         </td>
