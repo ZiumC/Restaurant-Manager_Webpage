@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Restaurants_Webpage.Models;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Restaurants_Webpage.Middlewares
@@ -22,8 +23,6 @@ namespace Restaurants_Webpage.Middlewares
         public Task Invoke(HttpContext httpContext)
         {
             var authenticationCookie = httpContext.Request.Cookies[_cookieName];
-
-            Console.WriteLine(authenticationCookie);
 
             if (authenticationCookie != null)
             {

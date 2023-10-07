@@ -70,6 +70,11 @@ app.UseStatusCodePages(async context =>
     {
         response.Redirect("/user/login");
     }
+
+    if (response.StatusCode == (int)HttpStatusCode.Forbidden)
+    {
+        response.Redirect("/user/forbidden");
+    }
 });
 
 app.UseMiddleware<AuthorizeCookieMiddleware>();

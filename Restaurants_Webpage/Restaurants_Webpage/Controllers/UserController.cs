@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Restaurants_Webpage.Models;
-using System.Web;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Restaurants_Webpage.Controllers
 {
@@ -13,6 +10,11 @@ namespace Restaurants_Webpage.Controllers
         }
 
         public IActionResult Register() 
+        {
+            return View();
+        }
+
+        public IActionResult Forbidden() 
         {
             return View();
         }
