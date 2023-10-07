@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Register";
+    var registerError = TempData["RegisterError"];
 }
 
 <!DOCTYPE html>
@@ -26,7 +27,7 @@
                     <tr>
                         <td align="center">
                             <div class="input-group table-width-medium">
-                                <input class="form-control" type="text" placeholder="Enter Username" name="login" required>
+                                <input class="form-control" type="text" placeholder="Enter Username" name="login" id="login" required>
                             </div>
                         </td>
                     </tr>
@@ -40,7 +41,7 @@
                     <tr>
                         <td align="center">
                             <div class="input-group table-width-medium">
-                                <input class="form-control" type="text" placeholder="Enter e-mail" name="email" required>
+                                <input class="form-control" type="text" placeholder="Enter e-mail" name="email" id="email" required>
                             </div>
                         </td>
                     </tr>
@@ -52,20 +53,20 @@
                     <tr>
                         <td align="center">
                             <div class="input-group table-width-medium">
-                                <input class="form-control" type="password" placeholder="Enter Password" name="password1" required>
+                                <input class="form-control" type="password" placeholder="Enter Password" name="password1" id="password1" required>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td align="center">
                             <div class="input-group table-width-medium">
-                                <input class="form-control" type="password" placeholder="Reenter Password" name="password2" required>
+                                <input class="form-control" type="password" placeholder="Reenter Password" name="password2" id="password2" required>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td align="center">
-                            <input type="checkbox" id="registerMeAsEmployee" name="registerMeAsEmployee">
+                            <input type="checkbox" name="registerMeAsEmployee" id="registerMeAsEmployee">
                             <label for="registerMeAsEmployee">Register me as an employee</label><br>
                         </td>
                     </tr>
@@ -77,7 +78,7 @@
                     <tr>
                         <td align="center">
                             <div class="input-group table-width-medium">
-                                <input class="form-control" type="text" placeholder="Enter PESEL" name="pesel">
+                                <input class="form-control" type="number" placeholder="Enter PESEL" name="pesel" id="pesel" onKeyPress="if(this.value.length==11) return false;" disabled>
                             </div>
                         </td>
                     </tr>
@@ -89,14 +90,19 @@
                     <tr>
                         <td align="center">
                             <div class="input-group table-width-medium">
-                                <input class="form-control" type="date" name="hiredDate">
+                                <input class="form-control" type="date" name="hiredDate" id="hiredDate" disabled>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <label class="error-text">
-                                asdasda
+                                @if (registerError != null)
+                                {
+                                    <label class="error-text">
+                                        @Html.Raw(registerError)
+                                    </label>
+                                }
                             </label>
                         </td>
                     </tr>
