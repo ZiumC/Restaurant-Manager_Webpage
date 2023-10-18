@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Restaurants_Webpage.Models.DataModels.Index;
+@model IEnumerable<RestaurantIndexModel>;
+
+@{
     ViewData["Title"] = "Homepage";
     string collapse = "collapse_";
     string heading = "heading_";
@@ -16,80 +19,101 @@
     <div class="background-page">
         <h1 class="title-text">Restaurants list:</h1>
         <div class="line-black"></div>
-        <div class="card">
-            <div class="header-card" id="@(@heading + 1)">
-                <h5 class="mb-0">
-                    <button class="btn btn-link" data-toggle="collapse" data-target="@("#" + collapse + 1)" aria-expanded="false" aria-controls="@(collapse + 1)">
 
-                        <table class="table-card-body-3-col table-restaurant-header">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <h5>Restaurant name:</h5>
-                                    </th>
-                                    <th>
-                                        <h5>Menu dishes:</h5>
-                                    </th>
-                                    <th>
-                                        <h5>Grade:</h5>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Zapiecek</td>
-                                    <td>6</td>
-                                    <td>4/10</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </button>
-                </h5>
+
+        @if (Model == null || Model.Count() == 0)
+        {
+            <div class="text-center">
+                <h4>There is no restaurants to show.</h4>
             </div>
-            <div id="@(@collapse + 1)" class="collapse" aria-labelledby="@(@heading + 1)" data-parent="#accordion">
-                <div class="line-black"></div>
-                <div class="card-body">
+        }
+        else
+        {
+            @foreach (var restaurant in Model)
+            {
+                <div class="card">
+                    <div class="header-card" id="@(@heading + restaurant.IdRestaurant)">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="@("#" + collapse + @restaurant.IdRestaurant)" aria-expanded="false" aria-controls="@(collapse + @restaurant.IdRestaurant)">
 
-                    <table class="table-card-body-2-col table-restaurant">
-                        <thead>
-                            <tr class="text-center">
-                                <th>
-                                    <h5>Restaurant address:</h5>
-                                </th>
-                                <th>
-                                    <h5>Actions:</h5>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-center">
-                            <tr>
-                                <td>
-                                    <p>
-                                        Warsaw
-                                    </p>
-                                    <p>
-                                        Al. Jana Pawła II 21/37
-                                    </p>
-                                </td>
+                                <table class="table-card-body-3-col table-restaurant-header">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <h5>Restaurant name:</h5>
+                                            </th>
+                                            <th>
+                                                <h5>Menu dishes:</h5>
+                                            </th>
+                                            <th>
+                                                <h5>Grade:</h5>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@restaurant.Name</td>
+                                            <td>@restaurant.MenuCount</td>
+                                            @if (restaurant.Grade == null)
+                                            {
+                                                <td>0/10</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@restaurant.Grade/10</td>
+                                            }
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="@(@collapse + @restaurant.IdRestaurant)" class="collapse" aria-labelledby="@(@heading + @restaurant.IdRestaurant)" data-parent="#accordion">
+                        <div class="line-black"></div>
+                        <div class="card-body">
 
-                                <td>
-                                    <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
-                                        <input type="hidden" name="idRestaurant" value="1" />
-                                        <input type="submit" value="Menu" class="btn btn-success btn-functional" id="menu-btn" />
-                                    </form>
+                            <table class="table-card-body-2-col table-restaurant">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th>
+                                            <h5>Restaurant address:</h5>
+                                        </th>
+                                        <th>
+                                            <h5>Actions:</h5>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td>
+                                            <p>
+                                                @restaurant.Address.City
+                                            </p>
+                                            <p>
+                                                Al. Jana Pawła II 21/37
+                                            </p>
+                                        </td>
 
-                                    <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
-                                        <input type="hidden" name="idRestaurant" value="1" />
-                                        <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                        <td>
+                                            <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
+                                                <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                                <input type="submit" value="Menu" class="btn btn-success btn-functional" id="menu-btn" />
+                                            </form>
 
+                                            <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
+                                                <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                                <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            }
+        }
     </div>
 </body>
 </html>
