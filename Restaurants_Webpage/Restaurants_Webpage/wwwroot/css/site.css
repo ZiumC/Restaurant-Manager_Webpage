@@ -1,112 +1,236 @@
 html {
-    font-size: 14px;
+	font-size: 14px;
 }
 
 @media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
+	html {
+		font-size: 16px;
+	}
 }
 
 html {
-    position: relative;
-    min-height: 100%;
+	position: relative;
+	min-height: 100%;
 }
 
 body {
-    animation: opacity-animation 0.1s;
-    animation-timing-function: linear;
+	animation: opacity-animation 0.1s;
+	animation-timing-function: linear;
 }
 
 .container {
-    max-width: 80%;
+	max-width: 80%;
 }
 
 .rightside-container {
-    height: 100%;
-    width: 100%;
+	height: 100%;
+	width: 100%;
 }
 
 .leftside-container {
-    height: 100%;
-    width: 100%;
+	height: 100%;
+	width: 100%;
 }
 
 .fixed-background {
-    animation: banner 0.3s;
-    background-image: url(../images/cover.jpg);
-    background-repeat: no-repeat;
-    background-position: center;
-    height: 38vh;
-    background-size: cover;
-    background-attachment: fixed;
-    margin-bottom: 2ex;
+	animation: banner 0.3s;
+	background-image: url(../images/cover.jpg);
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 38vh;
+	background-size: cover;
+	background-attachment: fixed;
+	margin-bottom: 2ex;
 }
 
 .title-text {
-    margin-left: 3ex;
+	margin-left: 3ex;
 }
 
 .line-black {
-    border-top: 0.3ex solid #5A5A5A;
-    margin-left: 5ex;
-    margin-right: 5ex;
-    margin-bottom: 2ex;
+	border-top: 0.3ex solid #5A5A5A;
+	margin-left: 5ex;
+	margin-right: 5ex;
+	margin-bottom: 2ex;
 }
 
 .footer-line-green {
-    border-top: 0.3ex solid #2C632B;
-    margin-bottom: 4ex;
-    margin-left: 5ex;
-    margin-right: 5ex;
+	border-top: 0.3ex solid #2C632B;
+	margin-bottom: 4ex;
+	margin-left: 5ex;
+	margin-right: 5ex;
 }
 
 .footer-text {
-    font-size: 3ex;
+	font-size: 3ex;
 }
 
 .background-page {
-    background-color: #E7E7E7;
-    padding-top: 2ex;
-    padding-bottom: 3ex;
+	background-color: #E7E7E7;
+	padding-top: 2ex;
+	padding-bottom: 3ex;
 }
 
 div.input-group input {
-    border-radius: 2ex;
-    border-width: 0.4ex;
-    border-color: #5A5A5A;
+	border-radius: 2ex;
+	border-width: 0.4ex;
+	border-color: #5A5A5A;
 }
 
 .table-container {
-    margin-left: 5ex;
-    margin-right: 5ex;
-    margin-top: 2ex;
-    margin-bottom: 2ex;
+	margin-left: 5ex;
+	margin-right: 5ex;
+	margin-top: 2ex;
+	margin-bottom: 2ex;
 }
 
 .table-md {
-    width: 50%;
-    border-collapse: separate;
-    border-spacing: 0 2ex;
-    margin-left: auto;
-    margin-right: auto;
-    word-wrap: break-word;
-    word-break: break-all;
-    white-space: normal;
+	width: 50%;
+	border-collapse: separate;
+	border-spacing: 0 2ex;
+	margin-left: auto;
+	margin-right: auto;
+	word-wrap: break-word;
+	word-break: break-all;
+	white-space: normal;
 }
 
 .table-header {
-    font-size: 3ex;
+	font-size: 3ex;
 }
 
 .table-width-medium {
-    width: 60%;
+	width: 60%;
 }
 
 .btn-medium {
-    width: 15ex;
+	width: 15ex;
 }
 
 .error-text {
-    color: red;
+	color: red;
+}
+div.row {
+	width: 100%;
+	margin-top: 0ex;
+	margin-right: 0ex;
+	margin-left: 0ex;
+}
+
+#accordin {
+	margin-left: 5ex;
+	margin-right: 5ex;
+	margin-top: 2ex;
+	margin-bottom: 2ex;
+}
+
+	#accordin div.card {
+		margin-top: 2ex;
+		margin-bottom: 2ex;
+		border-radius: 1.5ex;
+	}
+
+div.card-header {
+	border-radius: 1.5ex;
+	background-color: white;
+	border-bottom: none;
+}
+
+.card-line-black {
+	border-top: 0.3ex solid #5A5A5A;
+	margin-left: 5ex;
+	margin-right: 5ex;
+}
+
+h5.mb-0 button.btn {
+	width: 100%;
+	display: block;
+	text-decoration: none;
+	color: #5A5A5A;
+}
+
+	h5.mb-0 button.btn:focus {
+		box-shadow: none;
+	}
+
+div.card:hover {
+	border: 0.2ex solid #2C632B;
+}
+
+.header-card {
+	padding: 0.5rem 1rem;
+	margin-bottom: 0;
+}
+
+.card {
+	border: 0.2ex solid #D3D3D3;
+	margin-left: 5%;
+	margin-right: 5%;
+}
+
+.table-container {
+	margin-left: 5ex;
+	margin-right: 5ex;
+	margin-top: 2ex;
+	margin-bottom: 2ex;
+}
+
+table {
+	border-collapse: separate;
+	border-spacing: 0 1ex;
+}
+
+.table-card-body-2-col {
+	width: 90%;
+	height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table.table-card-body-2-col thead tr th:first-child,
+table.table-card-body-2-col thead tr th:last-child {
+	width: 50%;
+}
+
+.table-card-container {
+	width: 100%;
+	margin-left: 2ex;
+	margin-right: 2ex;
+	margin-top: 1ex;
+	margin-bottom: 1ex;
+}
+
+.btn-functional {
+	width: 18ex;
+}
+
+table.table-restaurant-header {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+
+	table.table-restaurant-header thead tr th h5 {
+		font-size: 2ex;
+	}
+
+	table.table-restaurant-header tbody tr td {
+		font-size: 3.5ex;
+	}
+
+	table.table-restaurant-header thead tr,
+	table.table-restaurant-header tbody {
+		text-align: left;
+	}
+
+@media all and (max-width: 550px) {
+
+	a.btn-functional {
+		font-size: 2ex;
+	}
+
+	.btn-functional {
+		width: 10ex;
+	}
 }

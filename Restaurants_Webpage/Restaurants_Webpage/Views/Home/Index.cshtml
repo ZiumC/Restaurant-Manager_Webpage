@@ -1,8 +1,88 @@
 ﻿@{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Homepage";
+    string collapse = "collapse_";
+    string heading = "heading_";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="background-page">
+        <h1 class="title-text">Restaurants list:</h1>
+        <div class="line-black"></div>
+        <div class="card">
+            <div class="header-card" id="@(@heading + 1)">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="@("#" + collapse + 1)" aria-expanded="false" aria-controls="@(collapse + 1)">
+
+                        <table class="table-card-body-4-col table-restaurant-header">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <h5>Restaurant name:</h5>
+                                    </th>
+                                    <th>
+                                        <h5>Menu dishes:</h5>
+                                    </th>
+                                    <th>
+                                        <h5>Grade:</h5>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Zapiecek</td>
+                                    <td>6</td>
+                                    <td>4/10</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </button>
+                </h5>
+            </div>
+            <div id="@(@collapse + 1)" class="collapse" aria-labelledby="@(@heading + 1)" data-parent="#accordion">
+                <div class="line-black"></div>
+                <div class="card-body">
+
+                    <table class="table-card-body-2-col table-restaurant">
+                        <thead>
+                            <tr class="text-center">
+                                <th>
+                                    <h5>Restaurant details:</h5>
+                                </th>
+                                <th>
+                                    <h5>Restaurant budget:</h5>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            <tr>
+                                <td>
+                                    <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
+                                        <input type="hidden" name="idRestaurant" value="1" />
+                                        <input type="submit" value="Details" class="btn btn-success btn-functional" />
+                                    </form>
+                                </td>
+
+                                <td>
+                                    <form asp-controller="Home" asp-action="RedirectToBonus" method="post">
+                                        <input type="hidden" name="idRestaurant" value="1" />
+                                        <input type="submit" value="Budget" class="btn btn-primary btn-functional" />
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
