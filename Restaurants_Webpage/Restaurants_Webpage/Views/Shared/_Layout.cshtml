@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@inject IHttpContextAccessor httpContextaccessor
+@{
+    var httpContext = httpContextaccessor.HttpContext;
+    var accessToken = httpContext.Request.Cookies["AccessToken"];
+
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -24,12 +30,21 @@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex">
                     <ul class="navbar-nav flex-grow-1">
-                        <li>
-                            <a type="button" class="btn btn-white" asp-area="" asp-controller="user" asp-action="register">Register</a>
-                        </li>
-                        <li>
-                            <a type="button" class="btn btn-white" asp-area="" asp-controller="user" asp-action="login">Login</a>
-                        </li>
+                        @if (accessToken != null)
+                        {
+                            <li>
+                                <a type="button" class="btn btn-white" asp-area="" asp-controller="user" asp-action="logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a type="button" class="btn btn-white" asp-area="" asp-controller="user" asp-action="register">Register</a>
+                            </li>
+                            <li>
+                                <a type="button" class="btn btn-white" asp-area="" asp-controller="user" asp-action="login">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
