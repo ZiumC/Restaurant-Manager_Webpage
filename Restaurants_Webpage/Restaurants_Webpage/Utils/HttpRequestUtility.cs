@@ -7,7 +7,7 @@ namespace Restaurants_Webpage.Utils
     {
         private static readonly HttpClient httpClient = new HttpClient();
 
-        public static async Task<HttpResponseMessage?> SendRequestAsync(string url, HttpMethods method, JsonContent jsonBody)
+        public static async Task<HttpResponseMessage?> SendRequestAsync(string url, HttpMethods method, JsonContent? jsonBody)
         {
             string methodType = "";
             switch (method)
