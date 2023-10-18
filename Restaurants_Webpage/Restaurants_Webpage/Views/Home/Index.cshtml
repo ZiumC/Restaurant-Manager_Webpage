@@ -21,7 +21,7 @@
                 <h5 class="mb-0">
                     <button class="btn btn-link" data-toggle="collapse" data-target="@("#" + collapse + 1)" aria-expanded="false" aria-controls="@(collapse + 1)">
 
-                        <table class="table-card-body-4-col table-restaurant-header">
+                        <table class="table-card-body-3-col table-restaurant-header">
                             <thead>
                                 <tr>
                                     <th>
@@ -54,26 +54,33 @@
                         <thead>
                             <tr class="text-center">
                                 <th>
-                                    <h5>Restaurant details:</h5>
+                                    <h5>Restaurant address:</h5>
                                 </th>
                                 <th>
-                                    <h5>Restaurant budget:</h5>
+                                    <h5>Actions:</h5>
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="text-center">
                             <tr>
                                 <td>
-                                    <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
-                                        <input type="hidden" name="idRestaurant" value="1" />
-                                        <input type="submit" value="Details" class="btn btn-success btn-functional" />
-                                    </form>
+                                    <p>
+                                        Warsaw
+                                    </p>
+                                    <p>
+                                        Al. Jana Pawła II 21/37
+                                    </p>
                                 </td>
 
                                 <td>
-                                    <form asp-controller="Home" asp-action="RedirectToBonus" method="post">
+                                    <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
                                         <input type="hidden" name="idRestaurant" value="1" />
-                                        <input type="submit" value="Budget" class="btn btn-primary btn-functional" />
+                                        <input type="submit" value="Menu" class="btn btn-success btn-functional" id="menu-btn" />
+                                    </form>
+
+                                    <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
+                                        <input type="hidden" name="idRestaurant" value="1" />
+                                        <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
                                     </form>
                                 </td>
                             </tr>
