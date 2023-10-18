@@ -1,0 +1,35 @@
+﻿table.table-restaurant-header thead tr th:first-child {
+	width: 40%;
+}
+
+@media all and (max-width: 680px) {
+
+	table.table-restaurant-header thead tr {
+		display: none;
+	}
+
+	table.table-restaurant-header tbody tr td:not(:first-child) {
+		display: none;
+	}
+
+	table.table-restaurant-header tbody tr td:first-child {
+		font-size: 4ex;
+		text-align: center;
+	}
+}
+
+@media all and (max-width: 420px) {
+
+	table.table-restaurant-header thead tr {
+		display: none;
+	}
+
+	table.table-restaurant-header tbody tr td:not(:first-child) {
+		display: none;
+	}
+
+	table.table-restaurant-header tbody tr td:first-child {
+		font-size: 2.7ex;
+		text-align: center;
+	}
+}
