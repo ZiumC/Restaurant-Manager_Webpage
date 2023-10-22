@@ -166,6 +166,7 @@ div.card:hover {
 	border: 0.2ex solid #D3D3D3;
 	margin-left: 5%;
 	margin-right: 5%;
+	margin-bottom: 1ex;
 }
 
 .table-container {
@@ -224,9 +225,17 @@ table.table-restaurant-header {
 		text-align: left;
 	}
 
-@media all and (max-width: 550px) {
+.user-greeting {
+	margin-right: 3ex;
+	font-size: 3.5ex;
+	font-weight: bold;
+	margin-top: auto;
+	margin-bottom: auto;
+	color: #E7E7E7;
+}
 
-	a.btn-functional {
+@media all and (max-width: 550px) {
+	a .btn-functional {
 		font-size: 2ex;
 	}
 

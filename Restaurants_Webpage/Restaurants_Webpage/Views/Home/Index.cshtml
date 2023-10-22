@@ -90,7 +90,18 @@
                                                 @restaurant.Address.City
                                             </p>
                                             <p>
-                                                Al. Jana Pawła II 21/37
+                                                @{
+                                                    var address = $"{restaurant.Address.Street} {restaurant.Address.BuildingNumber}";
+                                                    @if (!string.IsNullOrEmpty(restaurant.Address.LocalNumber))
+                                                    {
+                                                        address = $"{address}/{restaurant.Address.LocalNumber}";
+                                                        @address
+                                                    }
+                                                    else
+                                                    {
+                                                        @address
+                                                    }
+                                                }
                                             </p>
                                         </td>
 
