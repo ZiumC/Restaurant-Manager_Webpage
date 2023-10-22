@@ -113,6 +113,7 @@
 
                                             <form asp-controller="restaurant" asp-action="reservation" method="post">
                                                 <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                                <input type="hidden" name="restaurantName" value="@restaurant.Name" />
                                                 <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
                                             </form>
                                         </td>

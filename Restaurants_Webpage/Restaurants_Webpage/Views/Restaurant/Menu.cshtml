@@ -28,8 +28,8 @@
         <div class="line-black"></div>
 
         <div class="text-center">
-            <h4>@Html.Raw(TempData["UrlError"])</h4>
-            <h4>@Html.Raw(TempData["UrlStatusCode"])</h4>
+            <h4>@Html.Raw(TempData["MenuError"])</h4>
+            <h4>@Html.Raw(TempData["MenuStatusCode"])</h4>
         </div>
 
         @if (Model == null)
@@ -76,7 +76,8 @@
                     <div class="rightside-container">
                         <h4>Actions</h4>
                         <form asp-controller="restaurant" asp-action="reservation" method="post">
-                            <input type="hidden" name="idRestaurant" value="Model.IdRestaurant" />
+                            <input type="hidden" name="idRestaurant" value="@Model.IdRestaurant" />
+                            <input type="hidden" name="restaurantName" value="@Model.Name" />
                             <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
                         </form>
                     </div>
