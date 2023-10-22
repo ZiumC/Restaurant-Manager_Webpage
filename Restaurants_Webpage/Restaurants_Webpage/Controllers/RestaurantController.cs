@@ -15,7 +15,8 @@ namespace Restaurants_Webpage.Controllers
         {
             _config = config;
 
-            string restaurantMenuUrl = _config["Endpoints:GET:Clients:RestaurantMenu"];
+            string restaurantBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Clients"]);
+            string restaurantMenuUrl = string.Concat(restaurantBaseUrl, _config["Endpoints:Paths:Restaurant"]);
 
             try
             {
@@ -102,6 +103,15 @@ namespace Restaurants_Webpage.Controllers
                 return View("~/Views/Restaurant/Reservation.cshtml", (idRestaurant, restaurantName));
             }
 
+            if (idRestaurant <= 0)
+            {
+                TempData["ActionFailed"] = "ID of restaurant is broken. You have to make reservation again!";
+                return RedirectToAction("index", "home");
+            }
+
+
+
+            TempData["ActionSucceeded"] = "Reservation booked correctly.";
             return RedirectToAction("index", "home");
         }
     }

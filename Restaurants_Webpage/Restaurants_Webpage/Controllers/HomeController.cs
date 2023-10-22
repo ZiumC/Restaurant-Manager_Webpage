@@ -19,7 +19,12 @@ namespace Restaurants_Webpage.Controllers
             _logger = logger;
             _config = config;
 
-            string restaurantsListUrl = _config["Endpoints:GET:Clients:AllRestaurants"];
+
+            string clientBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Clients"]);
+            string restaurantsListUrl = string.Concat(clientBaseUrl,_config["Endpoints:Paths:Restaurant"]);
+
+            Console.WriteLine(restaurantsListUrl);
+
             try
             {
                 if (string.IsNullOrEmpty(restaurantsListUrl))

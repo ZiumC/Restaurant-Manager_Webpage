@@ -5,6 +5,9 @@
     ViewData["Title"] = "Homepage";
     string collapse = "collapse_";
     string heading = "heading_";
+
+    var actionFailed = TempData["ActionFailed"];
+    var actionSucceesed = TempData["ActionSucceeded"];
 }
 
 <!DOCTYPE html>
@@ -92,7 +95,7 @@
                                             <p>
                                                 @{
                                                     var address = $"{restaurant.Address.Street} {restaurant.Address.BuildingNumber}";
-                                                    @if (!string.IsNullOrEmpty(restaurant.Address.LocalNumber))
+                                                    if (!string.IsNullOrEmpty(restaurant.Address.LocalNumber))
                                                     {
                                                         address = $"{address}/{restaurant.Address.LocalNumber}";
                                                         @address
