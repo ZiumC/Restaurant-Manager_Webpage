@@ -1,5 +1,5 @@
-﻿@using Restaurants_Webpage.Models.DataModels.Index;
-@model IEnumerable<RestaurantIndexModel>;
+﻿@using Restaurants_Webpage.Models.ClientModels.Restaurant;
+@model IEnumerable<RestaurantModel>;
 
 @{
     ViewData["Title"] = "Homepage";
@@ -106,12 +106,12 @@
                                         </td>
 
                                         <td>
-                                            <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
+                                            <form asp-controller="restaurant" asp-action="menu" method="post">
                                                 <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                                 <input type="submit" value="Menu" class="btn btn-success btn-functional" id="menu-btn" />
                                             </form>
 
-                                            <form asp-controller="Home" asp-action="RedirectToDetails" method="post">
+                                            <form asp-controller="restaurant" asp-action="reservation" method="post">
                                                 <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                                 <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
                                             </form>

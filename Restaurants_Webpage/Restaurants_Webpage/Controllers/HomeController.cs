@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Restaurants_Webpage.Models;
-using Restaurants_Webpage.Models.DataModels.Index;
+using Restaurants_Webpage.Models.ClientModels.Restaurant;
 using Restaurants_Webpage.Utils;
 using System.Diagnostics;
 
@@ -42,7 +42,7 @@ namespace Restaurants_Webpage.Controllers
             if (response != null)
             {
                 var contentResponse = await response.Content.ReadAsStringAsync();
-                var restaurants = JsonConvert.DeserializeObject<IEnumerable<RestaurantIndexModel>>(contentResponse);
+                var restaurants = JsonConvert.DeserializeObject<IEnumerable<RestaurantModel>>(contentResponse);
 
                 return View(restaurants);
             }
