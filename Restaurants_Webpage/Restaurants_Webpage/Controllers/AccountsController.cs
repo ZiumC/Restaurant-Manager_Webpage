@@ -33,8 +33,11 @@ namespace Restaurants_Webpage.Controllers
             string loginRegex = _config["ApplicationSettings:DataValidation:LoginRegex"];
             string peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
 
-            string loginUrl = _config["Endpoints:POST:Users:Login"];
-            string registerUrl = _config["Endpoints:POST:Users:Register"];
+            string userBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Users"]);
+
+
+            string loginUrl = string.Concat(userBaseUrl, _config["Endpoints:Paths:Login"]);
+            string registerUrl = string.Concat(userBaseUrl, _config["Endpoints:Paths:Register"]);
 
             try
             {
@@ -233,7 +236,7 @@ namespace Restaurants_Webpage.Controllers
             {
                 TempData["RegisterError"] = responseMessage;
             }
-            else 
+            else
             {
                 TempData["RegisterError"] = "Unable to register an new account";
             }

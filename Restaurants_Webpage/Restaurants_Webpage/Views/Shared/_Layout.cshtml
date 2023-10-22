@@ -21,6 +21,8 @@
         userName = tokenContent?.Claims.First(claim => claim.Type == clientNameField).Value;
     }
 
+    var actionSucceeded = TempData["ActionSucceeded"];
+    var actionFailed = TempData["ActionFailed"];
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -50,7 +52,7 @@
                     @if (!string.IsNullOrEmpty(userName))
                     {
                         <p class="user-greeting">Hello, @userName!</p>
-                    } 
+                    }
                     else
                     {
                         <p class="user-greeting">Hello!</p>
@@ -84,6 +86,20 @@
                 </div>
             </div>
         </nav>
+        @if (actionSucceeded != null || actionFailed != null)
+        {
+            var toastHeader = actionSucceeded != null ? "Success!" : "Fail!";
+            var toastBody = actionSucceeded != null ? actionSucceeded : actionFailed;
+            <div id="toast-popup" class="toast show">
+                <div class="toast-header">
+                    <strong>@toastHeader</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    @toastBody
+                </div>
+            </div>
+        }
     </header>
     <div class="container">
         <main role="main" class="pb-3">

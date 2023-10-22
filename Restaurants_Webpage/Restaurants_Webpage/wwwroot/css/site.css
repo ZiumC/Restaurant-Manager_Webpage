@@ -234,6 +234,18 @@ table.table-restaurant-header {
 	color: #E7E7E7;
 }
 
+.toast {
+	width: 25%;
+	float: right;
+	background-color: white;
+	margin-right: 10ex;
+	margin-top: 2ex;
+}
+
+.toast-header .btn-close {
+	margin-left: auto;
+}
+
 @media all and (max-width: 550px) {
 	a .btn-functional {
 		font-size: 2ex;
