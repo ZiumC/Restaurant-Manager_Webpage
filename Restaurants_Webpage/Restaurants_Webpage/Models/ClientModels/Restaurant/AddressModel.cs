@@ -1,6 +1,6 @@
-﻿namespace Restaurants_Webpage.Models.DataModels.Index
+﻿namespace Restaurants_Webpage.Models.ClientModels.Restaurant
 {
-    public class AddressIndexModel
+    public class AddressModel
     {
         public string City { get; set; }
         public string Street { get; set; }
