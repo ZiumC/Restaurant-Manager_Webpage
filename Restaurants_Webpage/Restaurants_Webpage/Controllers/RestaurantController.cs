@@ -35,13 +35,13 @@ namespace Restaurants_Webpage.Controllers
 
         public async Task<IActionResult> Menu(int idRestaurant)
         {
-            if (idRestaurant < 0)
+            if (idRestaurant <= 0)
             {
                 TempData["UrlError"] = $"<b>ID</b> of restaurant is invalid.";
                 TempData["UrlStatusCode"] = $"Status code: <strong>400</strong>";
             }
 
-            var response = await HttpRequestUtility.SendRequestAsync(_restaurantMenuUrl, Utils.HttpMethods.GET, null);
+            var response = await HttpRequestUtility.SendRequestAsync($"{_restaurantMenuUrl}/{idRestaurant}", Utils.HttpMethods.GET, null);
             if (response == null)
             {
                 TempData["UrlError"] = "Unable connect to server the external.";
@@ -49,18 +49,18 @@ namespace Restaurants_Webpage.Controllers
                 return View();
             }
 
-            IEnumerable<RestaurantMenuModel>? menuModel = null;
+            RestaurantMenuModel? menuModel = null;
             string responseMessage = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
                 try
                 {
-                    menuModel = JsonConvert.DeserializeObject<IEnumerable<RestaurantMenuModel>>(responseMessage);
+                    menuModel = JsonConvert.DeserializeObject<RestaurantMenuModel>(responseMessage);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    TempData["UrlError"] = "Intrnal server error";
+                    TempData["UrlError"] = "Intrnal server error.";
                     TempData["UrlStatusCode"] = "Status code: <strong>500</strong>";
                 }
             }
