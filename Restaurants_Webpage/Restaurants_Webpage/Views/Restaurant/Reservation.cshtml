@@ -1,0 +1,78 @@
+﻿@model (int IdRestaurant, string name)
+@{
+    ViewData["Title"] = "Make reservation";
+
+    int idRestaurant = Model.IdRestaurant;
+    string restaurantName = Model.name;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="/js/register.js"></script>
+</head>
+<body>
+    <div class="background-page">
+        <h1 class="title-text">Make an reservation in restaurant @restaurantName</h1>
+        <div class="line-black"></div>
+        
+        <div class="text-center">
+            <h4>@Html.Raw(TempData["ReservationError"])</h4>
+            <h4>@Html.Raw(TempData["ReservationStatusCode"])</h4>
+        </div>
+
+        <form action="/restaurant/booktable" method="post">
+            <div class="table-container text-center">
+                <table class="table-md">
+                    <input type="hidden" name="idRestaurant" value="@idRestaurant" />
+                    <input type="hidden" name="restaurantName" value="@restaurantName" />
+                    <tr>
+                        <td class="table-header">
+                            <b>
+                                Reservation date
+                            </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group table-width-medium">
+                                <input class="form-control" type="date" name="reservationDate" id="reservationDate" required>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-header">
+                            <b>
+                                Number of peoples
+                            </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <div class="input-group table-width-medium">
+                                <input class="form-control" type="number" placeholder="Peoples" name="howManyPeoples" id="howManyPeoples" required>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="error-text">
+                                @Html.Raw(TempData["ReservationErrorLabel"])
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" value="Book" class="btn btn-success btn-medium" id="submit-register">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
