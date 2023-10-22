@@ -1,10 +1,16 @@
 ﻿@using Restaurants_Webpage.Models.ClientModels.Restaurant;
-@model IEnumerable<RestaurantMenuModel>;
+@model RestaurantMenuModel;
 
 @{
+    string restaurantName = "";
     if (Model == null)
     {
         ViewData["Title"] = "Menu of restaurant not found...";
+    }
+    else
+    {
+        restaurantName = Model.Name;
+        ViewData["Title"] = $"Menu of '{restaurantName}' restaurant";
     }
 }
 
@@ -18,7 +24,7 @@
 </head>
 <body>
     <div class="background-page">
-        <h1 class="title-text">Menu of restaurant:</h1>
+        <h1 class="title-text">Details of restaurant @restaurantName</h1>
         <div class="line-black"></div>
 
         <div class="text-center">
@@ -34,6 +40,50 @@
         }
         else
         {
+            <div class="row text-center">
+                <div class="col-xl-6">
+                    <div class="leftside-container">
+                        <h4>Restaurant score</h4>
+                        @if (Model.Grade == null)
+                        {
+                            <p>Not rated yet</p>
+                        }
+                        else
+                        {
+                            <p>@Model.Grade/10</p>
+                        }
+                        <h4>Restaurant address</h4>
+                        <p>
+                            @Model.Address.City
+                        </p>
+                        <p>
+                            @{
+                                var address = $"{Model.Address.Street} {Model.Address.BuildingNumber}";
+                                @if (!string.IsNullOrEmpty(Model.Address.LocalNumber))
+                                {
+                                    address = $"{address}/{Model.Address.LocalNumber}";
+                                    @address
+                                }
+                                else
+                                {
+                                    @address
+                                }
+                            }
+                        </p>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="rightside-container">
+                        <h4>Actions</h4>
+                        <form asp-controller="restaurant" asp-action="reservation" method="post">
+                            <input type="hidden" name="idRestaurant" value="Model.IdRestaurant" />
+                            <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="text-center">Restaurant menu</h4>
             <table class="table table-striped text-center menu-table">
                 <thead>
                     <tr>
@@ -43,21 +93,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                    </tr>
+                    @{
+                        int rowwCounter = 1;
+                        foreach (RestaurantDishModel dish in Model.Menu)
+                        {
+                            <tr>
+                                <th scope="row">@rowwCounter</th>
+                                <td>@dish.Name</td>
+                                <td>@String.Format("{0:0.00}", @dish.Price) PLN</td>
+                            </tr>
+                            rowwCounter++;
+                        }
+                    }
                 </tbody>
             </table>
         }
