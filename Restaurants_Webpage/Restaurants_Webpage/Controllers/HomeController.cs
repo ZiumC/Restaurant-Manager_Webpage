@@ -41,7 +41,7 @@ namespace Restaurants_Webpage.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var response = await HttpRequestUtility.SendRequestAsync(_restaurantsListUrl, Utils.HttpMethods.GET, null);
+            var response = await HttpRequestUtility.SendRequestAsync(_restaurantsListUrl, Utils.HttpMethods.GET, null, null);
             if (response != null)
             {
                 var contentResponse = await response.Content.ReadAsStringAsync();

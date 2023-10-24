@@ -109,7 +109,7 @@ namespace Restaurants_Webpage.Controllers
             }
 
             var body = JsonContent.Create(new { loginOrEmail = login, password = password });
-            var response = await HttpRequestUtility.SendRequestAsync(_loginUrl, Utils.HttpMethods.POST, body);
+            var response = await HttpRequestUtility.SendRequestAsync(_loginUrl, Utils.HttpMethods.POST, body, null);
 
             if (response == null)
             {
@@ -214,7 +214,7 @@ namespace Restaurants_Webpage.Controllers
                 pesel = model.pesel,
                 hiredDate = model.hiredDate
             });
-            var response = await HttpRequestUtility.SendRequestAsync(_registerUrl, Utils.HttpMethods.POST, body);
+            var response = await HttpRequestUtility.SendRequestAsync(_registerUrl, Utils.HttpMethods.POST, body, null);
 
             if (response == null)
             {
