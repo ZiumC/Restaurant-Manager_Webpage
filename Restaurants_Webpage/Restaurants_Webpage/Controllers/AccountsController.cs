@@ -34,8 +34,6 @@ namespace Restaurants_Webpage.Controllers
             string peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
 
             string userBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Users"]);
-
-
             string loginUrl = string.Concat(userBaseUrl, _config["Endpoints:Paths:Login"]);
             string registerUrl = string.Concat(userBaseUrl, _config["Endpoints:Paths:Register"]);
 
@@ -119,11 +117,10 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("login", "user");
             }
 
-            string responseMessage = await response.Content.ReadAsStringAsync();
+            string? responseMessage = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                string jsonData = await response.Content.ReadAsStringAsync();
-                JwtModel? jwt = JsonConvert.DeserializeObject<JwtModel>(jsonData);
+                JwtModel? jwt = JsonConvert.DeserializeObject<JwtModel>(responseMessage);
                 if (jwt != null)
                 {
                     HttpContext.Response.Cookies.Append("AccessToken", jwt.AccessToken);
@@ -225,7 +222,7 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("register", "user");
             }
 
-            string responseMessage = await response.Content.ReadAsStringAsync();
+            string? responseMessage = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
                 TempData["SuccessMessage"] = "Correctly registered!";
