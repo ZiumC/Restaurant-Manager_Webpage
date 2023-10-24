@@ -7,7 +7,7 @@ namespace Restaurants_Webpage.Utils
     {
         private static readonly HttpClient httpClient = new HttpClient();
 
-        public static async Task<HttpResponseMessage?> SendRequestAsync(string url, HttpMethods method, JsonContent? jsonBody)
+        public static async Task<HttpResponseMessage?> SendRequestAsync(string url, HttpMethods method, JsonContent? jsonBody, Dictionary<string, string>? headers)
         {
             string methodType = "";
             switch (method)
@@ -46,13 +46,20 @@ namespace Restaurants_Webpage.Utils
                 requestMessage.Content = jsonBody;
             }
 
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                {
+                    requestMessage.Headers.Add(header.Key, header.Value);
+                }
+            }
 
             HttpResponseMessage responseMessage = null;
             try
             {
                 responseMessage = await httpClient.SendAsync(requestMessage);
-            } 
-            catch (Exception ex) 
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }

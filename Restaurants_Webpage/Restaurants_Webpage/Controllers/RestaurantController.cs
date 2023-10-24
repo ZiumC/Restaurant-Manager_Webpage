@@ -70,7 +70,7 @@ namespace Restaurants_Webpage.Controllers
                 TempData["MenuStatusCode"] = $"Status code: <strong>400</strong>";
             }
 
-            var response = await HttpRequestUtility.SendRequestAsync($"{_restaurantMenuUrl}/{idRestaurant}", Utils.HttpMethods.GET, null);
+            var response = await HttpRequestUtility.SendRequestAsync($"{_restaurantMenuUrl}/{idRestaurant}", Utils.HttpMethods.GET, null, null);
             if (response == null)
             {
                 TempData["MenuError"] = "Unable connect to server the external.";
@@ -145,13 +145,11 @@ namespace Restaurants_Webpage.Controllers
 
             var tokenContent = new JwtSecurityTokenHandler().ReadToken(jwtCookie) as JwtSecurityToken;
             string? cookieClientId = tokenContent?.Claims.First(claim => claim.Type == _jwtCookieIdClientFieldName).Value;
-
             if (string.IsNullOrEmpty(cookieClientId))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("index", "home");
             }
-
 
             var body = JsonContent.Create(new
             {
@@ -161,7 +159,11 @@ namespace Restaurants_Webpage.Controllers
             });
 
             string reservationUrl = string.Format(_makeReservationUrl, cookieClientId);
-            var response = await HttpRequestUtility.SendRequestAsync(reservationUrl, Utils.HttpMethods.POST, body);
+            var headers = new Dictionary<string, string>
+            {
+                { "Authorization", $"Bearer {jwtCookie}"}
+            };
+            var response = await HttpRequestUtility.SendRequestAsync(reservationUrl, Utils.HttpMethods.POST, body, headers);
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
@@ -180,8 +182,8 @@ namespace Restaurants_Webpage.Controllers
             else
             {
                 TempData["ActionFailed"] = "Unable to book an reservation.";
-                return RedirectToAction("index", "home");
             }
+            return RedirectToAction("index", "home");
         }
     }
 }
