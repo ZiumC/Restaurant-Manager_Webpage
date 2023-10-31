@@ -112,20 +112,19 @@
                                             </td>
 
                                             <td>
-                                                <form asp-controller="restaurant" asp-action="menu" method="post">
-                                                    @* <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />*@
+                                                <form asp-controller="user" asp-action="modifyReservation" method="post">
+                                                    <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
+                                                    <input type="hidden" name="actionType" value="Confirm" />
                                                     <input type="submit" value="Confirm" class="btn btn-success btn-functional action-menu" />
                                                 </form>
 
-                                                <form asp-controller="restaurant" asp-action="reservation" method="post">
-                                                    @*  <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                        <input type="hidden" name="restaurantName" value="@restaurant.Name" />*@
+                                                <form asp-controller="user" asp-action="modifyReservation" method="post">
+                                                    <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
+                                                    <input type="hidden" name="actionType" value="Cancel" />
                                                     <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
                                                 </form>
 
                                                 <form asp-controller="restaurant" asp-action="reservation" method="post">
-                                                    @*  <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                        <input type="hidden" name="restaurantName" value="@restaurant.Name" />*@
                                                     <input type="submit" value="Rate" class="btn btn-warning btn-functional action-menu" />
                                                 </form>
                                             </td>
