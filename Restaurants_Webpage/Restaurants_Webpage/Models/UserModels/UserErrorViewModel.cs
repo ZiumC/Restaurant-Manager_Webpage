@@ -1,4 +1,4 @@
-﻿namespace Restaurants_Webpage.Models
+﻿namespace Restaurants_Webpage.Models.UserModels
 {
     public class UserErrorViewModel
     {

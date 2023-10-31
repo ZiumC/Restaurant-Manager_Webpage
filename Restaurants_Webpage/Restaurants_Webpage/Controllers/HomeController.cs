@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Restaurants_Webpage.Models;
-using Restaurants_Webpage.Models.ClientModels.Restaurant;
+using Restaurants_Webpage.Models.Restaurant;
 using Restaurants_Webpage.Utils;
 using System.Diagnostics;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Restaurants_Webpage.Models.ClientModels.Restaurant;
+using Restaurants_Webpage.Models.Restaurant;
 using Restaurants_Webpage.Utils;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;

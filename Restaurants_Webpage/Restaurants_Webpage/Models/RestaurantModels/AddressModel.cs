@@ -1,4 +1,4 @@
-﻿namespace Restaurants_Webpage.Models.ClientModels.Restaurant
+﻿namespace Restaurants_Webpage.Models.Restaurant
 {
     public class AddressModel
     {
