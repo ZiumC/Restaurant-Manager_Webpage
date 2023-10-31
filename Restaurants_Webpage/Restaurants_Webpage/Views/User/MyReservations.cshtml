@@ -1,0 +1,118 @@
+﻿
+@{
+    ViewData["Title"] = $"My Reservations";
+    string collapse = "collapse_";
+    string heading = "heading_";
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="background-page">
+        <h1 class="title-text">My rservations</h1>
+        <div class="line-black"></div>
+        @*
+        <div class="card">
+            <div class="header-card" id="@(@heading)">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="@("#" + collapse )" aria-expanded="false" aria-controls="@(collapse)">
+
+                        <table class="table-card-body-3-col table-restaurant-header">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <h5>Reservation status:</h5>
+                                    </th>
+                                    <th>
+                                        <h5>Date:</h5>
+                                    </th>
+                                    <th>
+                                        <h5>Number of seats:</h5>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@restaurant.Name</td>
+                                    <td>@restaurant.MenuCount</td>
+                                    @if (restaurant.Grade == null)
+                                    {
+                                        <td>?/10</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@restaurant.Grade/10</td>
+                                    }
+                                </tr>
+                            </tbody>
+                        </table>
+                    </button>
+                </h5>
+            </div>
+            <div id="@(@collapse + @restaurant.IdRestaurant)" class="collapse" aria-labelledby="@(@heading + @restaurant.IdRestaurant)" data-parent="#accordion">
+                <div class="line-black"></div>
+                <div class="card-body">
+
+                    <table class="table-card-body-2-col table-restaurant">
+                        <thead>
+                            <tr class="text-center">
+                                <th>
+                                    <h5>Restaurant address:</h5>
+                                </th>
+                                <th>
+                                    <h5>Actions:</h5>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            <tr>
+                                <td>
+                                    <p>
+                                        @restaurant.Address.City
+                                    </p>
+                                    <p>
+                                        @{
+                                            var address = $"{restaurant.Address.Street} {restaurant.Address.BuildingNumber}";
+                                            if (!string.IsNullOrEmpty(restaurant.Address.LocalNumber))
+                                            {
+                                                address = $"{address}/{restaurant.Address.LocalNumber}";
+                                                @address
+                                            }
+                                            else
+                                            {
+                                                @address
+                                            }
+                                        }
+                                    </p>
+                                </td>
+
+                                <td>
+                                    <form asp-controller="restaurant" asp-action="menu" method="post">
+                                        <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                        <input type="submit" value="Menu" class="btn btn-success btn-functional" id="menu-btn" />
+                                    </form>
+
+                                    <form asp-controller="restaurant" asp-action="reservation" method="post">
+                                        <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                        <input type="hidden" name="restaurantName" value="@restaurant.Name" />
+                                        <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        *@
+    </div>
+</body>
+</html>
