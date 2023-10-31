@@ -2,10 +2,6 @@
 	width: 40%;
 }
 
-#menu-btn {
-	margin-bottom: 1ex;
-}
-
 @media all and (max-width: 680px) {
 	table .table-restaurant-header thead tr {
 		display: none;

@@ -1,8 +1,12 @@
-﻿
+﻿@using Restaurants_Webpage.Models.UserModels.ClientModels;
+@model ClientDetailsModel;
+
 @{
     ViewData["Title"] = $"My Reservations";
     string collapse = "collapse_";
     string heading = "heading_";
+
+    var clientReservations = Model.ClientReservations;
 
 }
 
@@ -18,101 +22,123 @@
     <div class="background-page">
         <h1 class="title-text">My rservations</h1>
         <div class="line-black"></div>
-        @*
-        <div class="card">
-            <div class="header-card" id="@(@heading)">
-                <h5 class="mb-0">
-                    <button class="btn btn-link" data-toggle="collapse" data-target="@("#" + collapse )" aria-expanded="false" aria-controls="@(collapse)">
-
-                        <table class="table-card-body-3-col table-restaurant-header">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <h5>Reservation status:</h5>
-                                    </th>
-                                    <th>
-                                        <h5>Date:</h5>
-                                    </th>
-                                    <th>
-                                        <h5>Number of seats:</h5>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>@restaurant.Name</td>
-                                    <td>@restaurant.MenuCount</td>
-                                    @if (restaurant.Grade == null)
-                                    {
-                                        <td>?/10</td>
-                                    }
-                                    else
-                                    {
-                                        <td>@restaurant.Grade/10</td>
-                                    }
-                                </tr>
-                            </tbody>
-                        </table>
-                    </button>
-                </h5>
-            </div>
-            <div id="@(@collapse + @restaurant.IdRestaurant)" class="collapse" aria-labelledby="@(@heading + @restaurant.IdRestaurant)" data-parent="#accordion">
-                <div class="line-black"></div>
-                <div class="card-body">
-
-                    <table class="table-card-body-2-col table-restaurant">
-                        <thead>
-                            <tr class="text-center">
-                                <th>
-                                    <h5>Restaurant address:</h5>
-                                </th>
-                                <th>
-                                    <h5>Actions:</h5>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-center">
-                            <tr>
-                                <td>
-                                    <p>
-                                        @restaurant.Address.City
-                                    </p>
-                                    <p>
-                                        @{
-                                            var address = $"{restaurant.Address.Street} {restaurant.Address.BuildingNumber}";
-                                            if (!string.IsNullOrEmpty(restaurant.Address.LocalNumber))
-                                            {
-                                                address = $"{address}/{restaurant.Address.LocalNumber}";
-                                                @address
-                                            }
-                                            else
-                                            {
-                                                @address
-                                            }
-                                        }
-                                    </p>
-                                </td>
-
-                                <td>
-                                    <form asp-controller="restaurant" asp-action="menu" method="post">
-                                        <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                        <input type="submit" value="Menu" class="btn btn-success btn-functional" id="menu-btn" />
-                                    </form>
-
-                                    <form asp-controller="restaurant" asp-action="reservation" method="post">
-                                        <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                        <input type="hidden" name="restaurantName" value="@restaurant.Name" />
-                                        <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
+        @{
+            if (clientReservations == null || clientReservations.Count() == 0)
+            {
+                <div class="text-center">
+                    <h4>You don't have any reservations yet.</h4>
                 </div>
-            </div>
-        </div>
-        *@
+            }
+            else
+            {
+                foreach (var reservation in clientReservations)
+                {
+                    <div class="card">
+                        <div class="header-card" id="@(heading + reservation.IdReservation)">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link" data-toggle="collapse" data-target="@("#" + collapse + reservation.IdReservation)" aria-expanded="false" aria-controls="@(collapse+ reservation.IdReservation)">
+
+                                    <table class="table-card-body-4-col table-restaurant-header">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <h5>Reservation status:</h5>
+                                                </th>
+                                                <th>
+                                                    <h5>Date:</h5>
+                                                </th>
+                                                <th>
+                                                    <h5>Number of seats:</h5>
+                                                </th>
+                                                <th>
+                                                    <h5>Complaint:</h5>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>@reservation.Status</td>
+                                                <td>@reservation.ReservationDate.ToString("dd/MM/yyyy")</td>
+                                                <td>@reservation.HowManyPeoples</td>
+                                                @{
+                                                    if (reservation.ReservationComplaint == null)
+                                                    {
+                                                        <td>No</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>Yes</td>
+                                                    }
+                                                }
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="@(collapse + reservation.IdReservation)" class="collapse" aria-labelledby="@(heading + + reservation.IdReservation)" data-parent="#accordion">
+                            <div class="line-black"></div>
+                            <div class="card-body">
+
+                                <table class="table-card-body-2-col table-restaurant">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th>
+                                                <h5>Reservation complaint:</h5>
+                                            </th>
+                                            <th>
+                                                <h5>Actions:</h5>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <tr>
+                                            <td>
+                                                @{
+                                                    if (reservation.ReservationComplaint == null)
+                                                    {
+                                                        <p>This reservation doesn't have any complaint.</p>
+                                                        <form asp-controller="restaurant" asp-action="menu" method="post">
+                                                            @* <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />*@
+                                                            <input type="submit" value="Make complaint" class="btn btn-primary btn-functional action-menu" />
+                                                        </form>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p>Status: @reservation.ReservationComplaint.Status</p>
+                                                        <p>Message: @reservation.ReservationComplaint.Message</p>
+                                                    }
+                                                }
+                                            </td>
+
+                                            <td>
+                                                <form asp-controller="restaurant" asp-action="menu" method="post">
+                                                    @* <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />*@
+                                                    <input type="submit" value="Confirm" class="btn btn-success btn-functional action-menu" />
+                                                </form>
+
+                                                <form asp-controller="restaurant" asp-action="reservation" method="post">
+                                                    @*  <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                        <input type="hidden" name="restaurantName" value="@restaurant.Name" />*@
+                                                    <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
+                                                </form>
+
+                                                <form asp-controller="restaurant" asp-action="reservation" method="post">
+                                                    @*  <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                        <input type="hidden" name="restaurantName" value="@restaurant.Name" />*@
+                                                    <input type="submit" value="Rate" class="btn btn-warning btn-functional action-menu" />
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
     </div>
 </body>
 </html>
