@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Restaurants_Webpage.Models
+namespace Restaurants_Webpage.Models.UserModels
 {
-    public class RegisterModel
+    public class UserRegisterModel
     {
         [Required]
         [MaxLength(50)]

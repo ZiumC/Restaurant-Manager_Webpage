@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Restaurants_Webpage.Models;
+using Restaurants_Webpage.Models.UserModels;
 using Restaurants_Webpage.Utils;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -148,7 +149,7 @@ namespace Restaurants_Webpage.Controllers
             return RedirectToAction("login", "user");
         }
 
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register(UserRegisterModel model)
         {
             if (model.login.Length < _loginMinLength || model.login.Length > _loginMaxLength)
             {
