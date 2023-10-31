@@ -111,13 +111,13 @@
                                         <td>
                                             <form asp-controller="restaurant" asp-action="menu" method="post">
                                                 <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                                <input type="submit" value="Menu" class="btn btn-success btn-functional" id="menu-btn" />
+                                                <input type="submit" value="Menu" class="btn btn-success btn-functional action-menu"/>
                                             </form>
 
                                             <form asp-controller="restaurant" asp-action="reservation" method="post">
                                                 <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                                 <input type="hidden" name="restaurantName" value="@restaurant.Name" />
-                                                <input type="submit" value="Reservation" class="btn btn-primary btn-functional" />
+                                                <input type="submit" value="Reservation" class="btn btn-primary btn-functional action-menu" />
                                             </form>
                                         </td>
                                     </tr>

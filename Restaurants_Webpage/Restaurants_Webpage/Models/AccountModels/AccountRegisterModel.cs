@@ -2,7 +2,7 @@
 
 namespace Restaurants_Webpage.Models.UserModels
 {
-    public class UserRegisterModel
+    public class AccountRegisterModel
     {
         [Required]
         [MaxLength(50)]

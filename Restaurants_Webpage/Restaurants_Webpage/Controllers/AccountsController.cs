@@ -149,7 +149,7 @@ namespace Restaurants_Webpage.Controllers
             return RedirectToAction("login", "user");
         }
 
-        public async Task<IActionResult> Register(UserRegisterModel model)
+        public async Task<IActionResult> Register(AccountRegisterModel model)
         {
             if (model.login.Length < _loginMinLength || model.login.Length > _loginMaxLength)
             {

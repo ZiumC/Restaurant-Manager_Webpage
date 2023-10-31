@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Restaurants_Webpage.Models.Restaurant;
+using Restaurants_Webpage.Models.UserModels.ClientModels;
 using Restaurants_Webpage.Utils;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -109,9 +112,10 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("index", "home");
             }
 
-            
+            var contentResponse = await response.Content.ReadAsStringAsync();
+            var clientDetails = JsonConvert.DeserializeObject<ClientDetailsModel>(contentResponse);
 
-            return View();
+            return View(clientDetails);
         }
 
 
