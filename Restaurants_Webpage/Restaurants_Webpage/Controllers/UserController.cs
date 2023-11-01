@@ -14,7 +14,6 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _clientDataUrl;
         private readonly string _confirmReservationUrl;
         private readonly string _cancelReservationUrl;
-        private readonly string _jwtCookieName;
         private readonly string _jwtCookieIdClientFieldName;
 
         public UserController(IConfiguration config)
@@ -28,7 +27,6 @@ namespace Restaurants_Webpage.Controllers
             string confirmReservationUrl = string.Concat(clientReservationBaseUrl, _config["Endpoints:Paths:Confirm"]);
             string cancelReservationUrl = string.Concat(clientReservationBaseUrl, _config["Endpoints:Paths:Cancel"]);
 
-            string jwtCookieName = _config["ApplicationSettings:JwtSettings:CookieSettings:CookieName"];
             string jwtCookieIdClientFieldName = _config["ApplicationSettings:UserSettings:CookieSettings:Client:IdName"];
 
             try
@@ -36,11 +34,6 @@ namespace Restaurants_Webpage.Controllers
                 if (string.IsNullOrEmpty(clientDataUrl))
                 {
                     throw new Exception("Client data url can't be empty");
-                }
-
-                if (string.IsNullOrEmpty(jwtCookieName))
-                {
-                    throw new Exception("Jwt cookie namne can't be empty");
                 }
 
                 if (string.IsNullOrEmpty(jwtCookieIdClientFieldName))
@@ -61,7 +54,6 @@ namespace Restaurants_Webpage.Controllers
                 _clientDataUrl = clientDataUrl;
                 _confirmReservationUrl = confirmReservationUrl;
                 _cancelReservationUrl = cancelReservationUrl;
-                _jwtCookieName = jwtCookieName;
                 _jwtCookieIdClientFieldName = jwtCookieIdClientFieldName;
 
             }
@@ -101,28 +93,16 @@ namespace Restaurants_Webpage.Controllers
         [Authorize(Roles = UserRolesUtility.Client)]
         public async Task<IActionResult> MyReservations()
         {
-            string? jwtCookie = HttpContext.Request.Cookies[_jwtCookieName];
-            if (jwtCookie == null)
-            {
-                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("index", "home");
-            }
-
-            var tokenContent = new JwtSecurityTokenHandler().ReadToken(jwtCookie) as JwtSecurityToken;
-            string? cookieClientId = tokenContent?.Claims.First(claim => claim.Type == _jwtCookieIdClientFieldName).Value;
-            if (string.IsNullOrEmpty(cookieClientId))
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            string? cookieClientId = jwtUtils.GetJwtCookieValue(_jwtCookieIdClientFieldName);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()) || string.IsNullOrEmpty(cookieClientId))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("index", "home");
             }
 
             string reservationUrl = string.Format(_clientDataUrl, cookieClientId);
-            var headers = new Dictionary<string, string>
-            {
-                { "Authorization", $"Bearer {jwtCookie}"}
-            };
-
-            var response = await HttpRequestUtility.SendRequestAsync(reservationUrl, Utils.HttpMethods.GET, null, headers);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(reservationUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't see your reservations. Please try again later.";
@@ -135,7 +115,8 @@ namespace Restaurants_Webpage.Controllers
             return View(clientDetails);
         }
 
-        public async Task<IActionResult> ModifyReservation(int idReservation, string actionType)
+        [Authorize(Roles = UserRolesUtility.Client)]
+        public async Task<IActionResult> ModifyReservationStatus(int idReservation, string actionType)
         {
             if (string.IsNullOrEmpty(actionType) || idReservation < 0)
             {
@@ -153,41 +134,30 @@ namespace Restaurants_Webpage.Controllers
                 actionUrl = _cancelReservationUrl;
             }
 
-            string? jwtCookie = HttpContext.Request.Cookies[_jwtCookieName];
-            if (jwtCookie == null)
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            string? cookieClientId = jwtUtils.GetJwtCookieValue(_jwtCookieIdClientFieldName);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()) || string.IsNullOrEmpty(cookieClientId))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("myReservations", "user");
-            }
-
-            var tokenContent = new JwtSecurityTokenHandler().ReadToken(jwtCookie) as JwtSecurityToken;
-            string? cookieClientId = tokenContent?.Claims.First(claim => claim.Type == _jwtCookieIdClientFieldName).Value;
-            if (string.IsNullOrEmpty(cookieClientId))
-            {
-                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("myReservations", "user");
+                return RedirectToAction("index", "home");
             }
 
             string url = string.Format(actionUrl, cookieClientId, idReservation);
-            var headers = new Dictionary<string, string>
-            {
-                { "Authorization", $"Bearer {jwtCookie}"}
-            };
-            var response = await HttpRequestUtility.SendRequestAsync(url, Utils.HttpMethods.PUT, null, headers);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.PUT, null, jwtUtils.GetJwtCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
                 return RedirectToAction("index", "home");
             }
 
-            string? responseMessage = await response.Content.ReadAsStringAsync();
-            if (!string.IsNullOrEmpty(responseMessage))
+            if (response.IsSuccessStatusCode)
             {
-                TempData["ActionSucceeded"] = responseMessage;
+                string actionMade = actionType == "Confirm" ? "confirmed" : "cancelled";
+                TempData["ActionSucceeded"] = $"Reservation has been {actionMade} correctly!";
             }
             else
             {
-                TempData["ActionFailed"] = "Something went wrong, unable to perform such an action.";
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
             }
 
             return RedirectToAction("myReservations", "user");

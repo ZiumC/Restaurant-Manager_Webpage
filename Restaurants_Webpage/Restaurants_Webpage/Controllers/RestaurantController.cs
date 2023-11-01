@@ -12,7 +12,6 @@ namespace Restaurants_Webpage.Controllers
     {
         private readonly string _restaurantMenuUrl;
         private readonly string _makeReservationUrl;
-        private readonly string _jwtCookieName;
         private readonly string _jwtCookieIdClientFieldName;
         private readonly IConfiguration _config;
 
@@ -24,7 +23,6 @@ namespace Restaurants_Webpage.Controllers
             string restaurantMenuUrl = string.Concat(restaurantBaseUrl, _config["Endpoints:Paths:Restaurant"]);
             string makeReservationUrl = string.Concat(restaurantBaseUrl + "/{0}", _config["Endpoints:Paths:Reservation"]);
 
-            string jwtCookieName = _config["ApplicationSettings:JwtSettings:CookieSettings:CookieName"];
             string jwtCookieIdClientFieldName = _config["ApplicationSettings:UserSettings:CookieSettings:Client:IdName"];
 
             try
@@ -39,11 +37,6 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Make reservation url can't be empty");
                 }
 
-                if (string.IsNullOrEmpty(jwtCookieName))
-                {
-                    throw new Exception("Jwt cookie namne can't be empty");
-                }
-
                 if (string.IsNullOrEmpty(jwtCookieIdClientFieldName))
                 {
                     throw new Exception("Cookie id client name can't be empty");
@@ -51,7 +44,6 @@ namespace Restaurants_Webpage.Controllers
 
                 _restaurantMenuUrl = restaurantMenuUrl;
                 _makeReservationUrl = makeReservationUrl;
-                _jwtCookieName = jwtCookieName;
                 _jwtCookieIdClientFieldName = jwtCookieIdClientFieldName;
 
             }
