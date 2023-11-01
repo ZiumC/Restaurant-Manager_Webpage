@@ -1,4 +1,6 @@
-﻿namespace Restaurants_Webpage.Models.Restaurant
+﻿using Restaurants_Webpage.Models.CommonModels;
+
+namespace Restaurants_Webpage.Models.Restaurant
 {
     public class RestaurantModel
     {

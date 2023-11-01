@@ -1,13 +1,27 @@
 ﻿@using Restaurants_Webpage.Models.Restaurant;
 @model IEnumerable<RestaurantModel>;
 
+@inject IHttpContextAccessor httpContextaccessor
+@using System.IdentityModel.Tokens.Jwt;
+
 @{
+    string accessTokenName = "AccessToken";
+    string tokenRoleField = "role";
+    string supervisorRoleName = "SUPERVISOR";
+
     ViewData["Title"] = "Homepage";
     string collapse = "collapse_";
     string heading = "heading_";
 
-    var actionFailed = TempData["ActionFailed"];
-    var actionSucceesed = TempData["ActionSucceeded"];
+    var httpContext = httpContextaccessor.HttpContext;
+    var accessToken = httpContext?.Request.Cookies[accessTokenName];
+
+    var userRole = "";
+    if (accessToken != null)
+    {
+        var tokenContent = new JwtSecurityTokenHandler().ReadToken(accessToken) as JwtSecurityToken;
+        userRole = tokenContent?.Claims.First(claim => claim.Type == tokenRoleField).Value;
+    }
 }
 
 <!DOCTYPE html>
@@ -111,14 +125,17 @@
                                         <td>
                                             <form asp-controller="restaurant" asp-action="menu" method="post">
                                                 <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                                <input type="submit" value="Menu" class="btn btn-success btn-functional action-menu"/>
+                                                <input type="submit" value="Menu" class="btn btn-success btn-functional action-menu" />
                                             </form>
 
-                                            <form asp-controller="restaurant" asp-action="reservation" method="post">
-                                                <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                                <input type="hidden" name="restaurantName" value="@restaurant.Name" />
-                                                <input type="submit" value="Reservation" class="btn btn-primary btn-functional action-menu" />
-                                            </form>
+                                            @if (userRole != supervisorRoleName)
+                                            {
+                                                <form asp-controller="restaurant" asp-action="reservation" method="post">
+                                                    <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                                    <input type="hidden" name="restaurantName" value="@restaurant.Name" />
+                                                    <input type="submit" value="Reservation" class="btn btn-primary btn-functional action-menu" />
+                                                </form>
+                                            }
                                         </td>
                                     </tr>
                                 </tbody>

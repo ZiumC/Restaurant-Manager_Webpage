@@ -11,6 +11,7 @@
     <None Remove="Views\Client\MyReservations.cshtml.css" />
     <None Remove="Views\Home\Index.cshtml.css" />
     <None Remove="Views\Restaurant\Menu.cshtml.css" />
+    <None Remove="Views\Supervisor\MyReservations.cshtml.css" />
     <None Remove="Views\User\Login.cshtml.css" />
     <None Remove="Views\User\Register.cshtml.css" />
   </ItemGroup>
