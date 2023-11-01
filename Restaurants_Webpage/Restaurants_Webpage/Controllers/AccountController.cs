@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace Restaurants_Webpage.Controllers
 {
-    public class AccountsController : Controller
+    public class AccountController : Controller
     {
         private readonly IConfiguration _config;
         private readonly int _loginMinLength;
@@ -21,7 +21,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _loginUrl;
         private readonly string _registerUrl;
 
-        public AccountsController(IConfiguration config)
+        public AccountController(IConfiguration config)
         {
             _config = config;
 
