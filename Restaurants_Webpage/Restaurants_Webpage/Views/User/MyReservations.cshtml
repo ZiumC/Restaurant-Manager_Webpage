@@ -112,21 +112,38 @@
                                             </td>
 
                                             <td>
-                                                <form asp-controller="user" asp-action="modifyReservationStatus" method="post">
-                                                    <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
-                                                    <input type="hidden" name="actionType" value="Confirm" />
-                                                    <input type="submit" value="Confirm" class="btn btn-success btn-functional action-menu" />
-                                                </form>
+                                                @{
+                                                    if (reservation.ReservationDate >= DateTime.Now)
+                                                    {
+                                                        <form asp-controller="user" asp-action="modifyReservationStatus" method="post">
+                                                            <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
+                                                            <input type="hidden" name="actionType" value="Confirm" />
+                                                            <input type="submit" value="Confirm" class="btn btn-success btn-functional action-menu" />
+                                                        </form>
 
-                                                <form asp-controller="user" asp-action="modifyReservationStatus" method="post">
-                                                    <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
-                                                    <input type="hidden" name="actionType" value="Cancel" />
-                                                    <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
-                                                </form>
+                                                        <form asp-controller="user" asp-action="modifyReservationStatus" method="post">
+                                                            <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
+                                                            <input type="hidden" name="actionType" value="Cancel" />
+                                                            <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
+                                                        </form>
 
-                                                <form asp-controller="restaurant" asp-action="reservation" method="post">
-                                                    <input type="submit" value="Rate" class="btn btn-warning btn-functional action-menu" />
-                                                </form>
+                                                        <form asp-controller="restaurant" asp-action="reservation" method="post">
+                                                            <input type="submit" value="Rate" class="btn btn-warning btn-functional action-menu" />
+                                                        </form>
+                                                    } 
+                                                    else
+                                                    {
+                                                        <form asp-controller="" asp-action="">
+                                                            <input type="submit" value="Confirm" class="btn btn-success btn-functional action-menu" disabled />
+                                                        </form>
+                                                        <form asp-controller="" asp-action="">
+                                                            <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" disabled />
+                                                        </form>
+                                                        <form asp-controller="" asp-action="">
+                                                            <input type="submit" value="Rate" class="btn btn-warning btn-functional action-menu" disabled />
+                                                        </form>
+                                                    }
+                                                }
                                             </td>
                                         </tr>
                                     </tbody>
