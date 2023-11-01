@@ -8,23 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\Client\MyReservations.cshtml.css" />
     <None Remove="Views\Home\Index.cshtml.css" />
     <None Remove="Views\Restaurant\Menu.cshtml.css" />
     <None Remove="Views\User\Login.cshtml.css" />
-    <None Remove="Views\User\MyReservations.cshtml.css" />
     <None Remove="Views\User\Register.cshtml.css" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Views\Client\MyReservations.cshtml.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="Views\Home\Index.cshtml.css">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="Views\Restaurant\Menu.cshtml.css" />
-    <Content Include="Views\User\MyReservations.cshtml.css">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="Views\User\Register.cshtml.css">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

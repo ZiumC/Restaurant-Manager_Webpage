@@ -100,7 +100,7 @@
                                                         <p>This reservation doesn't have any complaint.</p>
                                                         if (!(reservation.Status == "NEW" || reservation.Status == "CANCELED") && reservation.ReservationDate < DateTime.Now)
                                                         {
-                                                            <form asp-controller="user" asp-action="makeComplaint" method="post">
+                                                            <form asp-controller="client" asp-action="makeComplaint" method="post">
                                                                 <div class="reservation-container">
                                                                     <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
                                                                     <textarea name="message" type="text" class="reservation-field" maxlength="350" placeholder="1-350 characters" rows="2"></textarea>
@@ -120,13 +120,13 @@
                                                 @{
                                                     if (reservation.ReservationDate >= DateTime.Now)
                                                     {
-                                                        <form asp-controller="user" asp-action="modifyReservationStatus" method="post">
+                                                        <form asp-controller="client" asp-action="modifyReservationStatus" method="post">
                                                             <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
                                                             <input type="hidden" name="actionType" value="Confirm" />
                                                             <input type="submit" value="Confirm" class="btn btn-success btn-functional action-menu" />
                                                         </form>
 
-                                                        <form asp-controller="user" asp-action="modifyReservationStatus" method="post">
+                                                        <form asp-controller="client" asp-action="modifyReservationStatus" method="post">
                                                             <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
                                                             <input type="hidden" name="actionType" value="Cancel" />
                                                             <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
@@ -159,7 +159,7 @@
                                                         @if (reservation.ReservationGrade == null)
                                                         {
                                                             <p>This reservation isn't rated yet.</p>
-                                                            <form asp-controller="user" asp-action="rateReservation" method="post">
+                                                            <form asp-controller="client" asp-action="rateReservation" method="post">
                                                                 <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
                                                                 <div class="reservation-container">
                                                                     <div class="reservation-field">
