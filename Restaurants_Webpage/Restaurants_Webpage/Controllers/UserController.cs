@@ -14,6 +14,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _confirmReservationUrl;
         private readonly string _cancelReservationUrl;
         private readonly string _makeComplaintUrl;
+        private readonly string _rateReservationUrl;
         private readonly string _jwtCookieIdClientFieldName;
 
         public UserController(IConfiguration config)
@@ -27,7 +28,7 @@ namespace Restaurants_Webpage.Controllers
             string confirmReservationUrl = string.Concat(clientReservationBaseUrl, _config["Endpoints:Paths:Confirm"]);
             string cancelReservationUrl = string.Concat(clientReservationBaseUrl, _config["Endpoints:Paths:Cancel"]);
             string makeComplaintUrl = string.Concat(clientReservationBaseUrl, _config["Endpoints:Paths:Complaint"]);
-
+            string rateReservationUrl = clientReservationBaseUrl + _config["Endpoints:Paths:Rate"] + "{2}";
 
 
             string jwtCookieIdClientFieldName = _config["ApplicationSettings:UserSettings:CookieSettings:Client:IdName"];
@@ -59,11 +60,17 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Make complaint url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(rateReservationUrl))
+                {
+                    throw new Exception("Rate reservation url can't be empty");
+                }
+
                 _clientDataUrl = clientDataUrl;
                 _confirmReservationUrl = confirmReservationUrl;
                 _cancelReservationUrl = cancelReservationUrl;
                 _jwtCookieIdClientFieldName = jwtCookieIdClientFieldName;
                 _makeComplaintUrl = makeComplaintUrl;
+                _rateReservationUrl = rateReservationUrl;
             }
             catch (Exception ex)
             {
@@ -208,7 +215,7 @@ namespace Restaurants_Webpage.Controllers
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("myReservations", "user");
             }
 
             if (response.IsSuccessStatusCode)
@@ -219,6 +226,50 @@ namespace Restaurants_Webpage.Controllers
             {
                 TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
             }
+            return RedirectToAction("myReservations", "user");
+        }
+
+
+        [Authorize(Roles = UserRolesUtility.Client)]
+        public async Task<IActionResult> RateReservation(int idReservation, int grade)
+        {
+            if (idReservation < 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return RedirectToAction("myReservations", "user");
+            }
+
+            if (grade < 0 || grade > 5) 
+            {
+                TempData["ActionFailed"] = "Reservation grade is invalid. It should be in range 0-5.";
+                return RedirectToAction("myReservations", "user");
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            string? cookieClientId = jwtUtils.GetJwtCookieValue(_jwtCookieIdClientFieldName);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()) || string.IsNullOrEmpty(cookieClientId))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("index", "home");
+            }
+
+            string url = string.Format(_rateReservationUrl, cookieClientId, idReservation, grade);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.PUT, null, jwtUtils.GetJwtCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
+                return RedirectToAction("myReservations", "user");
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["ActionSucceeded"] = "Reservation has been rated correctly.";
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
+
             return RedirectToAction("myReservations", "user");
         }
 

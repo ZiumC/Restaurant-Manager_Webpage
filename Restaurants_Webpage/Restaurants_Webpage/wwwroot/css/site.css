@@ -110,6 +110,7 @@ div.input-group input {
 .error-text {
 	color: red;
 }
+
 div.row {
 	width: 100%;
 	margin-top: 0ex;
@@ -240,6 +241,20 @@ table.table-restaurant-header {
 	background-color: white;
 	margin-right: 10ex;
 	margin-top: 2ex;
+}
+
+#toast-fail {
+	color: darkred;
+	font-size: 3ex;
+}
+
+#toast-success {
+	color: darkgreen;
+	font-size: 3ex;
+}
+
+.toast-body {
+	font-size: 2.2ex;
 }
 
 .toast-header .btn-close {

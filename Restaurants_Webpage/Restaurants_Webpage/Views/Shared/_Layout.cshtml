@@ -92,7 +92,14 @@
             var toastBody = actionSucceeded != null ? actionSucceeded : actionFailed;
             <div id="toast-popup" class="toast show">
                 <div class="toast-header">
-                    <strong>@toastHeader</strong>
+                    @if (toastHeader.Equals("Success!"))
+                    {
+                        <strong id="toast-success">@toastHeader</strong>
+                    }
+                    else
+                    {
+                        <strong id="toast-fail">@toastHeader</strong>
+                    }
                     <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
                 </div>
                 <div class="toast-body">
