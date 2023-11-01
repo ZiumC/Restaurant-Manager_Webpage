@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Restaurants_Webpage.Models.Restaurant;
 using Restaurants_Webpage.Utils;
-using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
 
 namespace Restaurants_Webpage.Controllers
 {

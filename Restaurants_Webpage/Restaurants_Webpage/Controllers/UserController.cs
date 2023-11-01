@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Restaurants_Webpage.Models.UserModels.ClientModels;
 using Restaurants_Webpage.Utils;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace Restaurants_Webpage.Controllers
 {
@@ -14,6 +13,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _clientDataUrl;
         private readonly string _confirmReservationUrl;
         private readonly string _cancelReservationUrl;
+        private readonly string _makeComplaintUrl;
         private readonly string _jwtCookieIdClientFieldName;
 
         public UserController(IConfiguration config)
@@ -26,6 +26,9 @@ namespace Restaurants_Webpage.Controllers
             string clientReservationBaseUrl = clientDataUrl + _config["Endpoints:Paths:Reservation"] + "/{1}";
             string confirmReservationUrl = string.Concat(clientReservationBaseUrl, _config["Endpoints:Paths:Confirm"]);
             string cancelReservationUrl = string.Concat(clientReservationBaseUrl, _config["Endpoints:Paths:Cancel"]);
+            string makeComplaintUrl = string.Concat(clientReservationBaseUrl, _config["Endpoints:Paths:Complaint"]);
+
+
 
             string jwtCookieIdClientFieldName = _config["ApplicationSettings:UserSettings:CookieSettings:Client:IdName"];
 
@@ -51,17 +54,21 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Cancel reservation url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(makeComplaintUrl))
+                {
+                    throw new Exception("Make complaint url can't be empty");
+                }
+
                 _clientDataUrl = clientDataUrl;
                 _confirmReservationUrl = confirmReservationUrl;
                 _cancelReservationUrl = cancelReservationUrl;
                 _jwtCookieIdClientFieldName = jwtCookieIdClientFieldName;
-
+                _makeComplaintUrl = makeComplaintUrl;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-
         }
 
         public IActionResult Login()
@@ -147,7 +154,7 @@ namespace Restaurants_Webpage.Controllers
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("myReservations", "user");
             }
 
             if (response.IsSuccessStatusCode)
@@ -160,6 +167,58 @@ namespace Restaurants_Webpage.Controllers
                 TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
             }
 
+            return RedirectToAction("myReservations", "user");
+        }
+
+        [Authorize(Roles = UserRolesUtility.Client)]
+        public async Task<IActionResult> MakeComplaint(int idReservation, string message)
+        {
+            if (idReservation < 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return RedirectToAction("myReservations", "user");
+            }
+
+            if (string.IsNullOrEmpty(message)) 
+            {
+                TempData["ActionFailed"] = "Message can't be empty.";
+                return RedirectToAction("myReservations", "user");
+            }
+
+            if (message.Length <= 0 || message.Length > 350)
+            {
+                TempData["ActionFailed"] = "Message should contain 1-350 characters.";
+                return RedirectToAction("myReservations", "user");
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            string? cookieClientId = jwtUtils.GetJwtCookieValue(_jwtCookieIdClientFieldName);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()) || string.IsNullOrEmpty(cookieClientId))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("index", "home");
+            }
+
+            var body = JsonContent.Create(new
+            {
+                message = message
+            });
+            string url = string.Format(_makeComplaintUrl, cookieClientId, idReservation);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.POST, body, jwtUtils.GetJwtCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
+                return RedirectToAction("index", "home");
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["ActionSucceeded"] = "Complaint has been made correctly.";
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
             return RedirectToAction("myReservations", "user");
         }
 

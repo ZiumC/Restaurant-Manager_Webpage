@@ -1,0 +1,14 @@
+﻿.complaint-field {
+	margin-bottom: 2ex;
+	width: 65%;
+	height: 14ex;
+}
+
+.complaint-container {
+	display: grid;
+	justify-items: center;
+}
+
+.status-length {
+	width: 30%;
+}
