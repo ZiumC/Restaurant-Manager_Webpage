@@ -57,7 +57,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>@reservation.Status</td>
+                                                <td class="status-length">@reservation.Status</td>
                                                 <td>@reservation.ReservationDate.ToString("dd/MM/yyyy")</td>
                                                 <td>@reservation.HowManyPeoples</td>
                                                 @{
@@ -98,15 +98,21 @@
                                                     if (reservation.ReservationComplaint == null)
                                                     {
                                                         <p>This reservation doesn't have any complaint.</p>
-                                                        <form asp-controller="restaurant" asp-action="menu" method="post">
-                                                            @* <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />*@
-                                                            <input type="submit" value="Make complaint" class="btn btn-primary btn-functional action-menu" />
-                                                        </form>
+                                                        if (!(reservation.Status == "NEW" || reservation.Status == "CANCELED") && reservation.ReservationDate < DateTime.Now)
+                                                        {
+                                                            <form asp-controller="user" asp-action="makeComplaint" method="post">
+                                                                <div class="complaint-container">
+                                                                    <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
+                                                                    <textarea name="message" type="text" class="complaint-field" maxlength="350" placeholder="1-350 characters" rows="10"></textarea>
+                                                                    <input type="submit" value="Make complaint" class="btn btn-primary btn-functional action-menu" />
+                                                                </div>
+                                                            </form>
+                                                        }
                                                     }
                                                     else
                                                     {
                                                         <p>Status: @reservation.ReservationComplaint.Status</p>
-                                                        <p>Message: @reservation.ReservationComplaint.Message</p>
+                                                        <textarea type="text" class="complaint-field" maxlength="350" rows="10" disabled>@reservation.ReservationComplaint.Message</textarea>
                                                     }
                                                 }
                                             </td>
@@ -127,10 +133,7 @@
                                                             <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
                                                         </form>
 
-                                                        <form asp-controller="restaurant" asp-action="reservation" method="post">
-                                                            <input type="submit" value="Rate" class="btn btn-warning btn-functional action-menu" />
-                                                        </form>
-                                                    } 
+                                                    }
                                                     else
                                                     {
                                                         <form asp-controller="" asp-action="">
@@ -139,9 +142,13 @@
                                                         <form asp-controller="" asp-action="">
                                                             <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" disabled />
                                                         </form>
-                                                        <form asp-controller="" asp-action="">
-                                                            <input type="submit" value="Rate" class="btn btn-warning btn-functional action-menu" disabled />
-                                                        </form>
+
+                                                        if (!(reservation.Status == "NEW" || reservation.Status == "CANCELED"))
+                                                        {
+                                                            <form asp-controller="restaurant" asp-action="reservation" method="post">
+                                                                <input type="submit" value="Rate" class="btn btn-warning btn-functional action-menu" />
+                                                            </form>
+                                                        }
                                                     }
                                                 }
                                             </td>
