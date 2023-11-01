@@ -6,7 +6,7 @@ namespace Restaurants_Webpage.Utils
     public static class HttpRequestUtility
     {
         private static readonly HttpClient _httpClient = new HttpClient();
-        private static readonly string _defaultResponseMessage = "Something went wrong, unable to perform such an action.";
+        public static readonly string _defaultResponseMessage = "Something went wrong, unable to perform such an action.";
 
         public static async Task<HttpResponseMessage?> SendRequestAsync(string url, HttpMethods method, JsonContent? jsonBody, Dictionary<string, string>? headers)
         {

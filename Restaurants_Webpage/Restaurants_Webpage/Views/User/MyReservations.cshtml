@@ -112,13 +112,13 @@
                                             </td>
 
                                             <td>
-                                                <form asp-controller="user" asp-action="modifyReservation" method="post">
+                                                <form asp-controller="user" asp-action="modifyReservationStatus" method="post">
                                                     <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
                                                     <input type="hidden" name="actionType" value="Confirm" />
                                                     <input type="submit" value="Confirm" class="btn btn-success btn-functional action-menu" />
                                                 </form>
 
-                                                <form asp-controller="user" asp-action="modifyReservation" method="post">
+                                                <form asp-controller="user" asp-action="modifyReservationStatus" method="post">
                                                     <input type="hidden" name="idReservation" value="@reservation.IdReservation" />
                                                     <input type="hidden" name="actionType" value="Cancel" />
                                                     <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
