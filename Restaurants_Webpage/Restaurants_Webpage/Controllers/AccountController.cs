@@ -127,7 +127,7 @@ namespace Restaurants_Webpage.Controllers
                     HttpContext.Response.Cookies.Append("AccessToken", jwt.AccessToken);
                     HttpContext.Response.Cookies.Append("RefreshToken", jwt.RefreshToken);
                     TempData["LoginError"] = null;
-                    return RedirectToAction("details", "home");
+                    return RedirectToAction("index", "home");
                 }
                 else
                 {
@@ -226,7 +226,7 @@ namespace Restaurants_Webpage.Controllers
             string? responseMessage = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                TempData["SuccessMessage"] = "Correctly registered!";
+                TempData["ActionSucceeded"] = "Correctly registered!";
                 TempData["RegisterError"] = null;
                 return RedirectToAction("index", "home");
             }
