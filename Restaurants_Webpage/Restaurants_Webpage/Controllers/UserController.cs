@@ -137,7 +137,7 @@ namespace Restaurants_Webpage.Controllers
 
         public async Task<IActionResult> ModifyReservation(int idReservation, string actionType)
         {
-            if (string.IsNullOrEmpty(actionType) || idReservation < 0) 
+            if (string.IsNullOrEmpty(actionType) || idReservation < 0)
             {
                 TempData["ActionFailed"] = "Did you modified request?";
                 return RedirectToAction("myReservations", "user");
@@ -181,17 +181,13 @@ namespace Restaurants_Webpage.Controllers
             }
 
             string? responseMessage = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
+            if (!string.IsNullOrEmpty(responseMessage))
             {
-                TempData["ActionSucceeded"] = "Reservation has been modified correctly.";
-            }
-            else if (!string.IsNullOrEmpty(responseMessage))
-            {
-                TempData["ActionFailed"] = responseMessage;
+                TempData["ActionSucceeded"] = responseMessage;
             }
             else
             {
-                TempData["ActionFailed"] = "Unable to modify reservation.";
+                TempData["ActionFailed"] = "Something went wrong, unable to perform such an action.";
             }
 
             return RedirectToAction("myReservations", "user");

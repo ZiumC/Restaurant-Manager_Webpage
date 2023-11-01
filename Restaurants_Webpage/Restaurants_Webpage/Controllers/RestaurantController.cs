@@ -136,16 +136,10 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("index", "home");
             }
 
-            string? jwtCookie = HttpContext.Request.Cookies[_jwtCookieName];
-            if (jwtCookie == null)
-            {
-                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("index", "home");
-            }
 
-            var tokenContent = new JwtSecurityTokenHandler().ReadToken(jwtCookie) as JwtSecurityToken;
-            string? cookieClientId = tokenContent?.Claims.First(claim => claim.Type == _jwtCookieIdClientFieldName).Value;
-            if (string.IsNullOrEmpty(cookieClientId))
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            string? cookieClientId = jwtUtils.GetJwtCookieValue(_jwtCookieIdClientFieldName);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()) || string.IsNullOrEmpty(cookieClientId))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("index", "home");
@@ -159,30 +153,22 @@ namespace Restaurants_Webpage.Controllers
             });
 
             string reservationUrl = string.Format(_makeReservationUrl, cookieClientId);
-            var headers = new Dictionary<string, string>
-            {
-                { "Authorization", $"Bearer {jwtCookie}"}
-            };
-            var response = await HttpRequestUtility.SendRequestAsync(reservationUrl, Utils.HttpMethods.POST, body, headers);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(reservationUrl, Utils.HttpMethods.POST, body, jwtUtils.GetJwtCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
                 return RedirectToAction("index", "home");
             }
 
-            string? responseMessage = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
                 TempData["ActionSucceeded"] = "Reservation booked correctly.";
             }
-            else if (!string.IsNullOrEmpty(responseMessage))
-            {
-                TempData["ActionFailed"] = responseMessage;
-            }
             else
             {
-                TempData["ActionFailed"] = "Unable to book an reservation.";
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
             }
+
             return RedirectToAction("index", "home");
         }
     }
