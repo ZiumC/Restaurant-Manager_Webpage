@@ -6,6 +6,6 @@
         public string Name { get; set; }
         public AddressModel Address { get; set; }
         public int MenuCount { get; set; }
-        public int? Grade { get; set; }
+        public double? Grade { get; set; }
     }
 }
