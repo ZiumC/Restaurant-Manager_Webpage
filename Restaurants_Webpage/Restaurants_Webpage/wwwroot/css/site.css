@@ -234,6 +234,14 @@ table.table-card-body-2-col thead tr th:last-child {
 	width: 18ex;
 }
 
+.btn-functional-container {
+	display: inline-block;
+}
+
+.btn-functional-table {
+	width: 9ex;
+}
+
 table.table-restaurant-header {
 	width: 100%;
 	margin-left: auto;
