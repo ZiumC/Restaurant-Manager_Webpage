@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Restaurants_Webpage.Models.Restaurant;
 using Restaurants_Webpage.Models.UserModels.EmployeeModels;
 using Restaurants_Webpage.Utils;
-using System;
 
 namespace Restaurants_Webpage.Controllers
 {

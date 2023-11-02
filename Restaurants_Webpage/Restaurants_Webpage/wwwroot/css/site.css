@@ -103,6 +103,13 @@ div.input-group input {
 	width: 60%;
 }
 
+.table-width-medium-center {
+	margin-left: auto;
+	margin-right: auto;
+	width: 50%;
+	margin-bottom: 0.5ex;
+}
+
 .btn-medium {
 	width: 15ex;
 }

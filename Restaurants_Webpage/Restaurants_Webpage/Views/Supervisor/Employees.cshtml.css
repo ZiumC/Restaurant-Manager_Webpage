@@ -1,0 +1,10 @@
+﻿.employee-data {
+	width: 10%;
+}
+
+.data-form {
+	padding-top: 0.7ex;
+	float: left;
+	width: 40%;
+	display: flex;
+}
