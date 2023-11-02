@@ -11,6 +11,7 @@
     <None Remove="Views\Client\MyReservations.cshtml.css" />
     <None Remove="Views\Home\Index.cshtml.css" />
     <None Remove="Views\Restaurant\Menu.cshtml.css" />
+    <None Remove="Views\Supervisor\EmployeeForm.cshtml.css" />
     <None Remove="Views\Supervisor\MyReservations.cshtml.css" />
     <None Remove="Views\User\Login.cshtml.css" />
     <None Remove="Views\User\Register.cshtml.css" />
@@ -26,6 +27,7 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="Views\Restaurant\Menu.cshtml.css" />
+    <Content Include="Views\Supervisor\EmployeeForm.cshtml.css" />
     <Content Include="Views\User\Register.cshtml.css">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
