@@ -110,6 +110,21 @@ div.input-group input {
 	margin-bottom: 0.5ex;
 }
 
+.card-body-table {
+	width: 100% ;
+	margin-bottom: 5ex;
+}
+
+.card-body-table-header {
+	vertical-align: middle;
+	text-align: left;
+}
+
+.card-body-table-content {
+	width: 65%;
+	padding-right: 5ex;
+}
+
 .btn-medium {
 	width: 15ex;
 }
