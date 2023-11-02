@@ -11,6 +11,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly IConfiguration _config;
         private readonly string _employeesUrl;
         private readonly string _employeeDetailsUrl;
+        private readonly string _employeeDeleteCertificateUrl;
 
 
         public SupervisorController(IConfiguration config)
@@ -19,6 +20,7 @@ namespace Restaurants_Webpage.Controllers
 
             string employeesBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Employees"]);
             string employeeDetailsUrl = employeesBaseUrl + "/{0}";
+            string employeeDeleteCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"] + "/{1}";
 
             try
             {
@@ -32,8 +34,14 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Employee details url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(employeeDeleteCertificateUrl))
+                {
+                    throw new Exception("Employee delete certificate url can't be empty");
+                }
+
                 _employeesUrl = employeesBaseUrl;
                 _employeeDetailsUrl = employeeDetailsUrl;
+                _employeeDeleteCertificateUrl = employeeDeleteCertificateUrl;
 
             }
             catch (Exception ex)
@@ -68,7 +76,7 @@ namespace Restaurants_Webpage.Controllers
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> EmployeeForm(int idEmpployee) 
+        public async Task<IActionResult> EmployeeForm(int idEmpployee)
         {
             if (idEmpployee > 0)
             {
@@ -92,6 +100,42 @@ namespace Restaurants_Webpage.Controllers
             }
 
             return View();
+        }
+
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> DeleteCertificate(int idEmpployee, int idCertificate)
+        {
+            if (idEmpployee < 0 || idCertificate < 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return RedirectToAction("employees", "supervisor");
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("index", "home");
+            }
+
+            string url = string.Format(_employeeDeleteCertificateUrl, idEmpployee, idCertificate);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.DELETE, null, jwtUtils.GetJwtCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
+                return RedirectToAction("index", "home");
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["ActionSucceeded"] = $"Employee certificate has been deleted correctly!";
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
+
+            return RedirectToAction("employees", "supervisor");
         }
 
         public IActionResult MyRestaurant()
