@@ -24,7 +24,7 @@
         <div class="line-black"></div>
         <div class="actions-menu">
             <form asp-controller="supervisor" asp-action="employeeForm" method="post">
-                <input type="submit" value="Add" class="btn btn-success btn-functional action-menu" />
+                <input type="submit" value="Add Employee" class="btn btn-success btn-functional action-menu" />
             </form>
         </div>
         @{
@@ -186,6 +186,7 @@
                                                     <th scope="col">#</th>
                                                     <th scope="col">Certificate name</th>
                                                     <th scope="col">Expiration date</th>
+                                                    <th scope="col">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -193,10 +194,26 @@
                                                     int rowwCounter = 1;
                                                     foreach (var certificate in employee.Certificates)
                                                     {
-                                                        <tr>
+                                                        <tr class="table-row-certificate">
                                                             <th scope="row">@rowwCounter</th>
                                                             <td>@certificate.Name</td>
                                                             <td>@certificate.ExpirationDate.ToString("dd/MM/yyyy")</td>
+                                                            <td>
+                                                                <div class="btn-functional-container">
+                                                                    <form asp-controller="supervisor" asp-action="employeeForm" method="post">
+                                                                        <input type="hidden" name="idEmpployee" value="@employee.IdEmployee" />
+                                                                        <input type="hidden" name="idEmpployee" value="@certificate.IdCertificate" />
+                                                                        <input type="submit" value="Edit" class="btn btn-warning btn-functional-table action-menu" />
+                                                                    </form>
+                                                                </div>
+                                                                <div class="btn-functional-container">
+                                                                    <form asp-controller="supervisor" asp-action="employeeForm" method="post">
+                                                                        <input type="hidden" name="idEmpployee" value="@employee.IdEmployee" />
+                                                                        <input type="hidden" name="idEmpployee" value="@certificate.IdCertificate" />
+                                                                        <input type="submit" value="Delete" class="btn btn-danger btn-functional-table action-menu" />
+                                                                    </form>
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                         rowwCounter++;
                                                     }
@@ -205,10 +222,24 @@
                                         </table>
                                     }
                                     <h5>Actions:</h5>
-                                    <form asp-controller="supervisor" asp-action="employeeForm" method="post">
-                                        <input type="hidden" name="idEmpployee" value="@employee.IdEmployee" />
-                                        <input type="submit" value="Edit" class="btn btn-warning btn-functional action-menu" />
-                                    </form>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <div class="btn-functional-container">
+                                                    <form asp-controller="supervisor" asp-action="employeeForm" method="post">
+                                                        <input type="hidden" name="idEmpployee" value="@employee.IdEmployee" />
+                                                        <input type="submit" value="Edit Employee" class="btn btn-warning btn-functional action-menu" />
+                                                    </form>
+                                                </div>
+                                                <div class="btn-functional-container">
+                                                    <form asp-controller="supervisor" asp-action="employeeForm" method="post">
+                                                        <input type="hidden" name="idEmpployee" value="@employee.IdEmployee" />
+                                                        <input type="submit" value="Add Certificate" class="btn btn-success btn-functional action-menu" />
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
