@@ -4,6 +4,9 @@
 	margin-right: auto;
 }
 
+.table tr {
+	vertical-align: middle;
+}
 
 .error-form {
 	margin-bottom: 3ex;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Restaurants_Webpage.Models.CommonModels;
 using Restaurants_Webpage.Models.UserModels.EmployeeModels;
 using Restaurants_Webpage.Utils;
 
@@ -135,6 +136,15 @@ namespace Restaurants_Webpage.Controllers
                 TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
             }
 
+            return RedirectToAction("employees", "supervisor");
+        }
+
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> SetEmployee(EmployeeModel employeeModel, AddressModel addressModel) 
+        {
+            Console.WriteLine(employeeModel);
+            Console.WriteLine(addressModel);
+            //send request!!!!
             return RedirectToAction("employees", "supervisor");
         }
 
