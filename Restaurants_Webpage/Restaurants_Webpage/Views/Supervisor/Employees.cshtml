@@ -22,6 +22,11 @@
     <div class="background-page">
         <h1 class="title-text">Employees from all restaurants</h1>
         <div class="line-black"></div>
+        <div class="actions-menu">
+            <form asp-controller="" asp-action="" method="post">
+                <input type="submit" value="Add" class="btn btn-success btn-functional action-menu" />
+            </form>
+        </div>
         @{
             if (employees == null || employees.Count() == 0)
             {

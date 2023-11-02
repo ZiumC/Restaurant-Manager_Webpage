@@ -125,6 +125,12 @@ div.input-group input {
 	padding-right: 5ex;
 }
 
+.actions-menu {
+	margin-left: 11ex;
+	margin-right: 11ex;
+	margin-bottom: 2ex;
+}
+
 .btn-medium {
 	width: 15ex;
 }
