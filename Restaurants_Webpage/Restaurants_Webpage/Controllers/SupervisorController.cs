@@ -5,6 +5,7 @@ using Restaurants_Webpage.Models.CommonModels;
 using Restaurants_Webpage.Models.UserModels.EmployeeModels;
 using Restaurants_Webpage.Utils;
 using Restaurants_Webpage.Utils.Validator;
+using System.Xml.Linq;
 
 namespace Restaurants_Webpage.Controllers
 {
@@ -15,6 +16,8 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _employeeDetailsUrl;
         private readonly string _addNewEmployeeUrl;
         private readonly string _updateEmployeeUrl;
+        private readonly string _addNewEmployeeCertificateUrl;
+        private readonly string _updateEmployeeCertificateUrl;
         private readonly string _employeeDeleteCertificateUrl;
 
 
@@ -23,10 +26,15 @@ namespace Restaurants_Webpage.Controllers
             _config = config;
 
             string employeesBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Employees"]);
+
             string employeeDetailsUrl = employeesBaseUrl + "/{0}";
             string employeeDeleteCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"] + "/{1}";
+
             string addNewEmployeeUrl = employeesBaseUrl;
             string updateEmployeeUrl = employeesBaseUrl + "/{0}";
+
+            string addNewEmployeeCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"];
+            string updateEmployeeCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"] + "/{1}";
 
             try
             {
@@ -55,11 +63,23 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Update employee url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(addNewEmployeeCertificateUrl))
+                {
+                    throw new Exception("Add new employee certificate url can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(updateEmployeeCertificateUrl))
+                {
+                    throw new Exception("Update employee certificate url can't be empty");
+                }
+
                 _employeesUrl = employeesBaseUrl;
                 _employeeDetailsUrl = employeeDetailsUrl;
                 _employeeDeleteCertificateUrl = employeeDeleteCertificateUrl;
                 _addNewEmployeeUrl = addNewEmployeeUrl;
                 _updateEmployeeUrl = updateEmployeeUrl;
+                _addNewEmployeeCertificateUrl = addNewEmployeeCertificateUrl;
+                _updateEmployeeCertificateUrl = updateEmployeeCertificateUrl;
 
             }
             catch (Exception ex)
@@ -214,7 +234,7 @@ namespace Restaurants_Webpage.Controllers
 
         public async Task<IActionResult> CertificateForm(int idEmployee, int idCertificate)
         {
-            if (idEmployee < 0)
+            if (idEmployee <= 0)
             {
                 TempData["ActionFailed"] = "Did you modified request?";
                 return RedirectToAction("employees", "supervisor");
@@ -226,17 +246,68 @@ namespace Restaurants_Webpage.Controllers
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("index", "home");
             }
+
             string url = string.Format(_employeeDetailsUrl, idEmployee);
             var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
             if (response == null)
             {
-                TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
                 return RedirectToAction("index", "home");
             }
 
             var contentResponse = await response.Content.ReadAsStringAsync();
             var employee = JsonConvert.DeserializeObject<EmployeeModel>(contentResponse);
             return View((employee, idCertificate));
+        }
+
+        public async Task<IActionResult> SetEmployeeCertificate(int idEmployee, int idCertificate, EmployeeCertificateModel certificate)
+        {
+            if (idEmployee <= 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return RedirectToAction("employees", "supervisor");
+            }
+
+            var method = Utils.HttpMethods.POST;
+            string url = string.Format(_addNewEmployeeCertificateUrl, idEmployee);
+            if (idCertificate > 0)
+            {
+                url = string.Format(_updateEmployeeCertificateUrl, idEmployee, idCertificate);
+                method = Utils.HttpMethods.PUT;
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("index", "home");
+            }
+
+            var body = JsonContent.Create(new
+            {
+                name = certificate.Name,
+                expirationDate = certificate.ExpirationDate
+            });
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, method, body, jwtUtils.GetJwtCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return RedirectToAction("index", "home");
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                string actionDone = idEmployee > 0 ? "updated" : "added";
+                TempData["ActionSucceeded"] = $"Employee certificate has been {actionDone}!";
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+                TempData["FormError"] = "Unable to save changes because form contains errors";
+                return RedirectToAction("certificateForm", "supervisor", new { idEmployee, idCertificate });
+            }
+
+            return RedirectToAction("employees", "supervisor");
         }
 
         public IActionResult MyRestaurant()
