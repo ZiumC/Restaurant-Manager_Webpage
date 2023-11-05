@@ -45,6 +45,12 @@
         isOwner = employee?.IsOwner;
     }
 
+    string upperTitlePage = "Add new employee";
+    if (!string.IsNullOrEmpty(employee?.FirstName))
+    {
+        upperTitlePage = "Edit employee data";
+    }
+
     var formError = TempData["FormError"];
 }
 
@@ -59,7 +65,7 @@
 </head>
 <body>
     <div class="background-page">
-        <h1 class="title-text">Employees from all restaurants</h1>
+        <h1 class="title-text">@upperTitlePage</h1>
         <div class="line-black"></div>
         <form asp-controller="supervisor" asp-action="setEmployee" method="post">
             <div class="row text-center">
