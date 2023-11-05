@@ -94,9 +94,9 @@ namespace Restaurants_Webpage.Controllers
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> EmployeeForm(int idEmpployee)
+        public async Task<IActionResult> EmployeeForm(int idEmployee)
         {
-            if (idEmpployee > 0)
+            if (idEmployee > 0)
             {
                 HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
                 if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
@@ -104,7 +104,7 @@ namespace Restaurants_Webpage.Controllers
                     TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                     return RedirectToAction("index", "home");
                 }
-                string url = string.Format(_employeeDetailsUrl, idEmpployee);
+                string url = string.Format(_employeeDetailsUrl, idEmployee);
                 var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
                 if (response == null)
                 {
@@ -122,9 +122,9 @@ namespace Restaurants_Webpage.Controllers
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> DeleteCertificate(int idEmpployee, int idCertificate)
+        public async Task<IActionResult> DeleteCertificate(int idEmployee, int idCertificate)
         {
-            if (idEmpployee < 0 || idCertificate < 0)
+            if (idEmployee < 0 || idCertificate < 0)
             {
                 TempData["ActionFailed"] = "Did you modified request?";
                 return RedirectToAction("employees", "supervisor");
@@ -137,7 +137,7 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("index", "home");
             }
 
-            string url = string.Format(_employeeDeleteCertificateUrl, idEmpployee, idCertificate);
+            string url = string.Format(_employeeDeleteCertificateUrl, idEmployee, idCertificate);
             var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.DELETE, null, jwtUtils.GetJwtCookie());
             if (response == null)
             {
@@ -164,10 +164,10 @@ namespace Restaurants_Webpage.Controllers
         /// <param name="addressModel"></param>
         /// <returns></returns>
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> SetEmployee(EmployeeModel employeeModel, AddressModel addressModel, int idEmployee) 
+        public async Task<IActionResult> SetEmployee(EmployeeModel employeeModel, AddressModel addressModel, int idEmployee)
         {
             employeeModel.Address = addressModel;
-            if (EmployeeValidator.IsDefectedEmployee(employeeModel, _config)) 
+            if (EmployeeValidator.IsDefectedEmployee(employeeModel, _config))
             {
                 TempData["ActionFailed"] = "Employee data contains errors!";
                 TempData["FormError"] = "Unable to save changes because form contains errors";
@@ -183,7 +183,7 @@ namespace Restaurants_Webpage.Controllers
 
             var method = Utils.HttpMethods.POST;
             string url = _addNewEmployeeUrl;
-            if (idEmployee > 0) 
+            if (idEmployee > 0)
             {
                 url = string.Format(_updateEmployeeUrl, idEmployee);
                 method = Utils.HttpMethods.PUT;
@@ -210,6 +210,33 @@ namespace Restaurants_Webpage.Controllers
             }
 
             return RedirectToAction("employees", "supervisor");
+        }
+
+        public async Task<IActionResult> CertificateForm(int idEmployee, int idCertificate)
+        {
+            if (idEmployee < 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return RedirectToAction("employees", "supervisor");
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("index", "home");
+            }
+            string url = string.Format(_employeeDetailsUrl, idEmployee);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
+                return RedirectToAction("index", "home");
+            }
+
+            var contentResponse = await response.Content.ReadAsStringAsync();
+            var employee = JsonConvert.DeserializeObject<EmployeeModel>(contentResponse);
+            return View((employee, idCertificate));
         }
 
         public IActionResult MyRestaurant()

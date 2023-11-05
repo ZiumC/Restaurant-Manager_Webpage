@@ -1,0 +1,159 @@
+﻿@using Restaurants_Webpage.Models.UserModels.EmployeeModels;
+@model (EmployeeModel employee, int idCertificate)
+@{
+    string pageTitle = "Add new certificate";
+    if (Model.Item1 != null)
+    {
+        pageTitle = $"Edit employee certificates";
+    }
+
+    ViewData["Title"] = pageTitle;
+
+    var employee = Model.Item1;
+    var selectedCertificate = employee?.Certificates?
+        .Where(ec => ec.IdCertificate == Model.Item2)
+        .FirstOrDefault();
+
+    var formError = TempData["FormError"];
+
+    string? certificateName = selectedCertificate?.Name;
+    string? certificateExpiriation = selectedCertificate?.ExpirationDate.ToString("yyyy-MM-dd");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="~/js/empForm.js"></script>
+</head>
+<body>
+    <div class="background-page">
+        <h1 class="title-text">Employee certificates</h1>
+        <div class="line-black"></div>
+        @if (employee?.Certificates == null || employee.Certificates.Count() == 0)
+        {
+            <div class="row text-center">
+                <p>Employee certificates not found</p>
+            </div>
+        }
+        else
+        {
+            <table class="table table-striped text-center menu-table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Certificate name</th>
+                        <th scope="col">Expiration date</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int rowwCounter = 1;
+                        foreach (var certificate in employee.Certificates)
+                        {
+                            if (certificate.IdCertificate == selectedCertificate?.IdCertificate)
+                            {
+                                <tr class="table-row-certificate table-dark">
+                                    <th scope="row">@rowwCounter</th>
+                                    <td>@certificate.Name</td>
+                                    <td>@certificate.ExpirationDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <div class="btn-functional-container">
+                                            <form asp-controller="" asp-action="" method="post">
+                                                <input type="hidden" name="idEmpployee" value="@employee.IdEmployee" />
+                                                <input type="hidden" name="idCertificate" value="@certificate.IdCertificate" />
+                                                <input type="submit" value="Edit" class="btn btn-warning btn-functional-table action-menu" />
+                                            </form>
+                                        </div>
+                                        <div class="btn-functional-container">
+                                            <form asp-controller="supervisor" asp-action="deleteCertificate" method="post">
+                                                <input type="hidden" name="idEmpployee" value="@employee.IdEmployee" />
+                                                <input type="hidden" name="idCertificate" value="@certificate.IdCertificate" />
+                                                <input type="submit" value="Delete" class="btn btn-danger btn-functional-table action-menu" />
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr class="table-row-certificate">
+                                    <th scope="row">@rowwCounter</th>
+                                    <td>@certificate.Name</td>
+                                    <td>@certificate.ExpirationDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <div class="btn-functional-container">
+                                            <form asp-controller="supervisor" asp-action="certificateForm" method="post">
+                                                <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
+                                                <input type="hidden" name="idCertificate" value="@certificate.IdCertificate" />
+                                                <input type="submit" value="Edit" class="btn btn-warning btn-functional-table action-menu"/>
+                                            </form>
+                                        </div>
+                                        <div class="btn-functional-container">
+                                            <form asp-controller="supervisor" asp-action="deleteCertificate" method="post">
+                                                <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
+                                                <input type="hidden" name="idCertificate" value="@certificate.IdCertificate" />
+                                                <input type="submit" value="Delete" class="btn btn-danger btn-functional-table action-menu" />
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            rowwCounter++;
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+        <form asp-controller="supervisor" asp-action="setEmployeeCertificate" method="post">
+            <div class="text-center certificate-form-container">
+                <table class="card-body-table">
+                    <tr>
+                        <td class="card-body-table-header">
+                            Certificate name:
+                        </td>
+                        <td class="card-body-table-content">
+                            <div class="input-group">
+                                <input class="form-control" name="Name" type="text" value="@certificateName">
+                            </div>
+                        </td>
+                        <input name="IdCertificate" type="hidden" value="@selectedCertificate?.IdCertificate">
+                        <input name="IdEmployee" type="hidden" value="@employee?.IdEmployee">
+                    </tr>
+                    <tr>
+                        <td class="card-body-table-header">
+                            Expiration date:
+                        </td>
+                        <td class="card-body-table-content">
+                            <div class="input-group">
+                                <input class="form-control" name="ExpirationDate" type="date" value="@certificateExpiriation">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="text-center error-form">
+                @if (formError != null)
+                {
+                    <label class="error-text">
+                        @Html.Raw(formError)
+                    </label>
+                }
+            </div>
+
+            <div class="text-center">
+                <input type="submit" value="Save" class="btn btn-success btn-functional action-menu" />
+            </div>
+        </form>
+        <form asp-controller="supervisor" asp-action="employees" method="get">
+            <div class="text-center">
+                <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
+            </div>
+        </form>
+    </div>
+</body>
+</html>
