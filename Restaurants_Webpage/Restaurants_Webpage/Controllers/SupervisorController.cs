@@ -307,7 +307,7 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("certificateForm", "supervisor", new { idEmployee, idCertificate });
             }
 
-            return RedirectToAction("employees", "supervisor");
+            return RedirectToAction("certificateForm", "supervisor", new { idEmployee });
         }
 
         public IActionResult MyRestaurant()
