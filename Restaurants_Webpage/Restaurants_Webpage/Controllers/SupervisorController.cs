@@ -19,6 +19,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _addNewEmployeeCertificateUrl;
         private readonly string _updateEmployeeCertificateUrl;
         private readonly string _employeeDeleteCertificateUrl;
+        private readonly string _restaurantsUrl;
 
 
         public SupervisorController(IConfiguration config)
@@ -35,6 +36,8 @@ namespace Restaurants_Webpage.Controllers
 
             string addNewEmployeeCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"];
             string updateEmployeeCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"] + "/{1}";
+
+            string restaurantsBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Restaurants"]);
 
             try
             {
@@ -73,6 +76,11 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Update employee certificate url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(restaurantsBaseUrl))
+                {
+                    throw new Exception("Rstaurants base url can't be empty");
+                }
+
                 _employeesUrl = employeesBaseUrl;
                 _employeeDetailsUrl = employeeDetailsUrl;
                 _employeeDeleteCertificateUrl = employeeDeleteCertificateUrl;
@@ -80,7 +88,7 @@ namespace Restaurants_Webpage.Controllers
                 _updateEmployeeUrl = updateEmployeeUrl;
                 _addNewEmployeeCertificateUrl = addNewEmployeeCertificateUrl;
                 _updateEmployeeCertificateUrl = updateEmployeeCertificateUrl;
-
+                _restaurantsUrl = restaurantsBaseUrl;
             }
             catch (Exception ex)
             {
@@ -310,8 +318,19 @@ namespace Restaurants_Webpage.Controllers
             return RedirectToAction("certificateForm", "supervisor", new { idEmployee });
         }
 
-        public IActionResult MyRestaurant()
+        public IActionResult Restaurants()
         {
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("restaurants", "supervisor");
+            }
+
+
+
+
+
             return View();
         }
     }

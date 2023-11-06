@@ -1,27 +1,13 @@
-﻿@using System.IdentityModel.Tokens.Jwt;
-@using Restaurants_Webpage.Models.UserModels.ClientModels.ClientRestaurantModels;
-@model IEnumerable<RestaurantModel>;
+﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.BasicModels;
+@model IEnumerable<BasicRestaurantModel>;
 
-@inject IHttpContextAccessor httpContextaccessor
 
 @{
-    string accessTokenName = "AccessToken";
-    string tokenRoleField = "role";
-    string supervisorRoleName = "SUPERVISOR";
 
-    ViewData["Title"] = "Homepage";
+    ViewData["Title"] = "My restaurants";
     string collapse = "collapse_";
     string heading = "heading_";
 
-    var httpContext = httpContextaccessor.HttpContext;
-    var accessToken = httpContext?.Request.Cookies[accessTokenName];
-
-    var userRole = "";
-    if (accessToken != null)
-    {
-        var tokenContent = new JwtSecurityTokenHandler().ReadToken(accessToken) as JwtSecurityToken;
-        userRole = tokenContent?.Claims.First(claim => claim.Type == tokenRoleField).Value;
-    }
 }
 
 <!DOCTYPE html>
@@ -34,7 +20,7 @@
 </head>
 <body>
     <div class="background-page">
-        <h1 class="title-text">Restaurants list:</h1>
+        <h1 class="title-text">Restaurants list</h1>
         <div class="line-black"></div>
 
 
@@ -69,16 +55,6 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>@restaurant.Name</td>
-                                            <td class="menu-count">@restaurant.MenuCount</td>
-                                            @if (restaurant.Grade == null)
-                                            {
-                                                <td>?/10</td>
-                                            }
-                                            else
-                                            {
-                                                <td>@restaurant.Grade/10</td>
-                                            }
                                         </tr>
                                     </tbody>
                                 </table>
@@ -127,15 +103,6 @@
                                                 <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                                 <input type="submit" value="Menu" class="btn btn-success btn-functional action-menu" />
                                             </form>
-
-                                            @if (userRole != supervisorRoleName)
-                                            {
-                                                <form asp-controller="restaurant" asp-action="reservation" method="post">
-                                                    <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                                    <input type="hidden" name="restaurantName" value="@restaurant.Name" />
-                                                    <input type="submit" value="Reservation" class="btn btn-primary btn-functional action-menu" />
-                                                </form>
-                                            }
                                         </td>
                                     </tr>
                                 </tbody>
