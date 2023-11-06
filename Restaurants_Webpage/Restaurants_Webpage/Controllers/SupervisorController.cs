@@ -95,14 +95,14 @@ namespace Restaurants_Webpage.Controllers
             if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             var response = await HttpRequestUtility.SendSecureRequestJwtAsync(_employeesUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             var contentResponse = await response.Content.ReadAsStringAsync();
@@ -122,14 +122,14 @@ namespace Restaurants_Webpage.Controllers
                 if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
                 {
                     TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                    return RedirectToAction("index", "home");
+                    return RedirectToAction("employees", "supervisor");
                 }
                 string url = string.Format(_employeeDetailsUrl, idEmployee);
                 var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
                 if (response == null)
                 {
                     TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
-                    return RedirectToAction("index", "home");
+                    return RedirectToAction("employees", "supervisor");
                 }
 
                 var contentResponse = await response.Content.ReadAsStringAsync();
@@ -154,7 +154,7 @@ namespace Restaurants_Webpage.Controllers
             if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             string url = string.Format(_employeeDeleteCertificateUrl, idEmployee, idCertificate);
@@ -162,7 +162,7 @@ namespace Restaurants_Webpage.Controllers
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't delete certificate now, please try again later.";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             if (response.IsSuccessStatusCode)
@@ -198,7 +198,7 @@ namespace Restaurants_Webpage.Controllers
             if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             var method = Utils.HttpMethods.POST;
@@ -214,7 +214,7 @@ namespace Restaurants_Webpage.Controllers
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             if (response.IsSuccessStatusCode)
@@ -244,7 +244,7 @@ namespace Restaurants_Webpage.Controllers
             if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             string url = string.Format(_employeeDetailsUrl, idEmployee);
@@ -252,7 +252,7 @@ namespace Restaurants_Webpage.Controllers
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             var contentResponse = await response.Content.ReadAsStringAsync();
@@ -280,7 +280,7 @@ namespace Restaurants_Webpage.Controllers
             if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             var body = JsonContent.Create(new
@@ -292,7 +292,7 @@ namespace Restaurants_Webpage.Controllers
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
-                return RedirectToAction("index", "home");
+                return RedirectToAction("employees", "supervisor");
             }
 
             if (response.IsSuccessStatusCode)

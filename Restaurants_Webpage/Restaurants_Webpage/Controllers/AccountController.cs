@@ -127,7 +127,15 @@ namespace Restaurants_Webpage.Controllers
                     HttpContext.Response.Cookies.Append("AccessToken", jwt.AccessToken);
                     HttpContext.Response.Cookies.Append("RefreshToken", jwt.RefreshToken);
                     TempData["LoginError"] = null;
-                    return RedirectToAction("index", "home");
+                    var userRole = new HttpJwtUtility(_config, HttpContext).GetJwtCookieValue(JwtFields.ROLE);
+                    if (userRole == null || userRole.Contains("CLIENT"))
+                    {
+                        return RedirectToAction("index", "home");
+                    }
+                    else 
+                    {
+                        return RedirectToAction("employees", "supervisor");
+                    }
                 }
                 else
                 {
