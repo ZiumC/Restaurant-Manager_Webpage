@@ -3,3 +3,7 @@
 	margin-right: auto;
 	margin-left: auto;
 }
+
+.table tr {
+	vertical-align: middle;
+}

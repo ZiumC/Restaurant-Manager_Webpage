@@ -1,5 +1,7 @@
 ﻿@inject IHttpContextAccessor httpContextaccessor
 @using System.IdentityModel.Tokens.Jwt;
+
+
 @{
     string accessTokenName = "AccessToken";
     string clientRoleField = "role";
@@ -40,9 +42,17 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-xl navbar-light bg-green justify-content-center box-shadow mb-3">
             <div class="container-fluid">
 
-                <a class="navbar-brand" asp-area="" asp-controller="home" asp-action="index">
-                    <img src="~/images/logo.png" />
-                </a>
+                @if (userRole == supervisorRoleName)
+                {
+                    <a class="navbar-brand" asp-area="" asp-controller="supervisor" asp-action="myRestaurant">
+                        <img src="~/images/logo.png" />
+                    </a>
+                } else
+                {
+                    <a class="navbar-brand" asp-area="" asp-controller="home" asp-action="index">
+                        <img src="~/images/logo.png" />
+                    </a>
+                }
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -60,24 +70,29 @@
                     <ul class="navbar-nav flex-grow-1">
                         @if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(userRole))
                         {
-                            <li>
-                                <a type="button" class="btn btn-white" asp-area="" asp-controller="home" asp-action="index">Restaurants</a>
-                            </li>
-                            @if (userRole == clientRoleName)
-                            {
-                                <li>
-                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="client" asp-action="myReservations">My reservations</a>
-                                </li>
-                            }
                             @if (userRole == supervisorRoleName)
                             {
                                 <li>
                                     <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="employees">Employees</a>
                                 </li>
                                 <li>
-                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="myRestaurant">My restaurant</a>
+                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="myRestaurant">Restaurants</a>
                                 </li>
                             }
+                            else
+                            {
+                                <li>
+                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="home" asp-action="index">Restaurants</a>
+                                </li>
+                            }
+
+                            @if (userRole == clientRoleName)
+                            {
+                                <li>
+                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="client" asp-action="myReservations">Reservations</a>
+                                </li>
+                            }
+
                             <li>
                                 <a type="button" class="btn btn-white" asp-area="" asp-controller="user" asp-action="logout">Logout</a>
                             </li>
