@@ -44,7 +44,7 @@
 
                 @if (userRole == supervisorRoleName)
                 {
-                    <a class="navbar-brand" asp-area="" asp-controller="supervisor" asp-action="myRestaurant">
+                    <a class="navbar-brand" asp-area="" asp-controller="supervisor" asp-action="restaurants">
                         <img src="~/images/logo.png" />
                     </a>
                 } else
@@ -76,7 +76,7 @@
                                     <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="employees">Employees</a>
                                 </li>
                                 <li>
-                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="myRestaurant">Restaurants</a>
+                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="restaurants">Restaurants</a>
                                 </li>
                             }
                             else

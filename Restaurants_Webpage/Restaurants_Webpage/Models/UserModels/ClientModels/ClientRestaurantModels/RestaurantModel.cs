@@ -1,6 +1,6 @@
 ﻿using Restaurants_Webpage.Models.CommonModels;
 
-namespace Restaurants_Webpage.Models.Restaurant
+namespace Restaurants_Webpage.Models.UserModels.ClientModels.ClientRestaurantModels
 {
     public class RestaurantModel
     {
