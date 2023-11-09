@@ -94,7 +94,7 @@ namespace Restaurants_Webpage.Controllers
 
         public async Task<IActionResult> Login(string login, string password)
         {
-
+            var requestContext = HttpContext;
             if (login.Length < _loginMinLength || login.Length > _loginMaxLength)
             {
                 TempData["LoginError"] = $"<b>Login</b> should contains at least " +
@@ -157,7 +157,7 @@ namespace Restaurants_Webpage.Controllers
             return RedirectToAction("login", "user");
         }
 
-        public async Task<IActionResult> Register(AccountRegisterModel model)
+        public async Task<IActionResult> Register(RegisterAccountModel model)
         {
             if (model.login.Length < _loginMinLength || model.login.Length > _loginMaxLength)
             {

@@ -6,7 +6,7 @@ namespace Restaurants_Webpage.Models.UserModels.ClientModels.ClientRestaurantMod
     {
         public int IdRestaurant { get; set; }
         public string Name { get; set; }
-        public AddressModel Address { get; set; }
+        public CommonAddressModel Address { get; set; }
         public int MenuCount { get; set; }
         public double? Grade { get; set; }
     }

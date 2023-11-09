@@ -13,7 +13,7 @@ namespace Restaurants_Webpage.Models.UserModels.EmployeeModels
         public DateTime HiredDate { get; set; }
         public DateTime? FirstPromotionChefDate { get; set; }
         public string IsOwner { get; set; }
-        public AddressModel Address { get; set; }
+        public CommonAddressModel Address { get; set; }
         public List<EmployeeCertificateModel>? Certificates { get; set; }
     }
 }

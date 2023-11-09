@@ -192,7 +192,7 @@ namespace Restaurants_Webpage.Controllers
         /// <param name="addressModel"></param>
         /// <returns></returns>
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> SetEmployee(EmployeeModel employeeModel, AddressModel addressModel, int idEmployee)
+        public async Task<IActionResult> SetEmployee(EmployeeModel employeeModel, CommonAddressModel addressModel, int idEmployee)
         {
             employeeModel.Address = addressModel;
             if (EmployeeValidator.IsDefectedEmployee(employeeModel, _config))

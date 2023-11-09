@@ -1,6 +1,6 @@
 ﻿namespace Restaurants_Webpage.Models.CommonModels
 {
-    public class AddressModel
+    public class CommonAddressModel
     {
         public string City { get; set; }
         public string Street { get; set; }
