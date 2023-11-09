@@ -8,7 +8,7 @@ namespace Restaurants_Webpage.Models.UserModels.AdministrativeModels.BasicModels
         public string Name { get; set; }
         public string Status { get; set; }
         public decimal BonusBudget { get; set; }
-        public AddressModel Address { get; set; }
+        public CommonAddressModel Address { get; set; }
         public int DishesCount { get; set; }
         public int WorkersCount { get; set; }
         public int TotalReservationsCount { get; set; }

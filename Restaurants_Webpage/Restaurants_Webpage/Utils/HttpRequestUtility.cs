@@ -16,7 +16,7 @@ namespace Restaurants_Webpage.Utils
                 case HttpMethods.GET:
                     if (jsonBody != null)
                     {
-                        throw new Exception("Method GET must had empty body");
+                        throw new Exception("Method GET should had empty body");
                     }
                     methodType = "GET";
                     break;
@@ -32,7 +32,7 @@ namespace Restaurants_Webpage.Utils
                 case HttpMethods.DELETE:
                     if (jsonBody != null)
                     {
-                        throw new Exception("Method DELETE must had empty body");
+                        throw new Exception("Method DELETE should had empty body");
                     }
                     methodType = "DELETE";
                     break;
@@ -68,7 +68,8 @@ namespace Restaurants_Webpage.Utils
             return responseMessage;
         }
 
-        public static async Task<HttpResponseMessage?> SendSecureRequestJwtAsync(string url, HttpMethods method, JsonContent? jsonBody, string? jwt)
+        public static async Task<HttpResponseMessage?> SendSecureRequestJwtAsync(
+            string url, HttpMethods method, JsonContent? jsonBody, string? jwt)
         {
             try
             {

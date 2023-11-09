@@ -9,7 +9,7 @@ namespace Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedMod
         public string Name { get; set; }
         public string Status { get; set; }
         public decimal BonusBudget { get; set; }
-        public AddressModel Address { get; set; }
+        public CommonAddressModel Address { get; set; }
         public IEnumerable<ExtendedDishModel> RestaurantDishes { get; set; }
         public IEnumerable<BasicEmployeeModel> RestaurantWorkers { get; set; }
     }

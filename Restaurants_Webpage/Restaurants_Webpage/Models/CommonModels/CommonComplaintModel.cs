@@ -1,6 +1,6 @@
-﻿namespace Restaurants_Webpage.Models.UserModels.ClientModels
+﻿namespace Restaurants_Webpage.Models.CommonModels
 {
-    public class ClientComplaintModel
+    public class CommonComplaintModel
     {
         public int IdComplaint { get; set; }
         public DateTime ComplaintDate { get; set; }
