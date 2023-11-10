@@ -42,9 +42,9 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-xl navbar-light bg-green justify-content-center box-shadow mb-3">
             <div class="container-fluid">
 
-                @if (userRole == supervisorRoleName)
+                @if (userRole == supervisorRoleName || userRole == ownerRoleName)
                 {
-                    <a class="navbar-brand" asp-area="" asp-controller="supervisor" asp-action="restaurants">
+                    <a class="navbar-brand" asp-area="" asp-controller="restaurant" asp-action="restaurants">
                         <img src="~/images/logo.png" />
                     </a>
                 } else
@@ -76,7 +76,7 @@
                                     <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="employees">Employees</a>
                                 </li>
                                 <li>
-                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="restaurants">Restaurants</a>
+                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="restaurant" asp-action="restaurants">Restaurants</a>
                                 </li>
                             }
                             else

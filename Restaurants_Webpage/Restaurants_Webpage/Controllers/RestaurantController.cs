@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
 using Restaurants_Webpage.Models.UserModels.ClientModels.ClientRestaurantModels;
 using Restaurants_Webpage.Utils;
 
@@ -11,20 +12,31 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _restaurantMenuUrl;
         private readonly string _makeReservationUrl;
         private readonly string _jwtCookieIdClientFieldName;
+        private readonly string _restaurantsUrl;
+        private readonly string _ownerRole;
         private readonly IConfiguration _config;
 
         public RestaurantController(IConfiguration config)
         {
             _config = config;
 
-            string restaurantBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Clients"]);
-            string restaurantMenuUrl = string.Concat(restaurantBaseUrl, _config["Endpoints:Paths:Restaurant"]);
-            string makeReservationUrl = string.Concat(restaurantBaseUrl + "/{0}", _config["Endpoints:Paths:Reservation"]);
+            string ownerRole = _config["ApplicationSettings:AdministrativeRoles:Owner"].ToUpper();
+
+            string restaurantClientsBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Clients"]);
+            string restaurantMenuUrl = string.Concat(restaurantClientsBaseUrl, _config["Endpoints:Paths:Restaurant"]);
+            string makeReservationUrl = string.Concat(restaurantClientsBaseUrl + "/{0}", _config["Endpoints:Paths:Reservation"]);
 
             string jwtCookieIdClientFieldName = _config["ApplicationSettings:UserSettings:CookieSettings:Client:IdName"];
 
+            string restaurantsBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Restaurants"]);
+
             try
             {
+                if (string.IsNullOrEmpty(ownerRole))
+                {
+                    throw new Exception("Owner role can't be empty");
+                }
+
                 if (string.IsNullOrEmpty(restaurantMenuUrl))
                 {
                     throw new Exception("Restaurant menu url can't be empty");
@@ -40,9 +52,17 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Cookie id client name can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(restaurantsBaseUrl))
+                {
+                    throw new Exception("Rstaurants base url can't be empty");
+                }
+
+                _ownerRole = ownerRole;
                 _restaurantMenuUrl = restaurantMenuUrl;
                 _makeReservationUrl = makeReservationUrl;
                 _jwtCookieIdClientFieldName = jwtCookieIdClientFieldName;
+                _restaurantsUrl = restaurantsBaseUrl;
+
 
             }
             catch (Exception ex)
@@ -160,6 +180,56 @@ namespace Restaurants_Webpage.Controllers
             }
 
             return RedirectToAction("index", "home");
+        }
+
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> Restaurants()
+        {
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return View();
+            }
+
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(_restaurantsUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return View();
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                var restaurantsJsonData = await response.Content.ReadAsStringAsync();
+                var restaurants = JsonConvert.DeserializeObject<IEnumerable<ExtendedRestaurantModel>>(restaurantsJsonData);
+
+                if (_ownerRole.Equals(jwtUtils.GetJwtRequestCookieValue(JwtFields.ROLE, jwtUtils.GetJwtRequestCookie())))
+                {
+                    return View(restaurants);
+                }
+
+                string? idEmployee = jwtUtils.GetJwtRequestCookieValue(JwtFields.EMP_ID, jwtUtils.GetJwtRequestCookie());
+                if (!string.IsNullOrEmpty(idEmployee))
+                {
+                    int parsedIdEmployee = int.Parse(idEmployee, 0);
+                    if (parsedIdEmployee > 0)
+                    {
+                        var supervisorRestaurants = restaurants?
+                            .Where(r => r.RestaurantWorkers.Any(rw => rw.IdEmployee == parsedIdEmployee))
+                            .ToList();
+                        return View(supervisorRestaurants);
+                    }
+                }
+
+                return View();
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
+
+            return View();
         }
     }
 }
