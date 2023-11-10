@@ -13,3 +13,7 @@
 	margin-right: auto;
 	margin-left: auto;
 }
+
+.table tr td{
+	width: 30%;
+}

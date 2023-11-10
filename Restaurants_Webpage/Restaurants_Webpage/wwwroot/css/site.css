@@ -110,9 +110,12 @@ div.input-group input {
 	margin-bottom: 0.5ex;
 }
 
+.form-btn {
+	margin-top: 5ex;
+}
+
 .card-body-table {
-	width: 100% ;
-	margin-bottom: 5ex;
+	width: 100%;
 }
 
 .card-body-table-header {
@@ -239,7 +242,7 @@ table.table-card-body-2-col thead tr th:last-child {
 }
 
 .btn-functional-table {
-	width: 9ex;
+	width: 10ex;
 }
 
 table.table-restaurant-header {
