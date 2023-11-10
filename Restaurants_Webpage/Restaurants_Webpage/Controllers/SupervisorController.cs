@@ -2,16 +2,18 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Restaurants_Webpage.Models.CommonModels;
+using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
 using Restaurants_Webpage.Models.UserModels.EmployeeModels;
 using Restaurants_Webpage.Utils;
 using Restaurants_Webpage.Utils.Validator;
-using System.Xml.Linq;
+using System;
 
 namespace Restaurants_Webpage.Controllers
 {
     public class SupervisorController : Controller
     {
         private readonly IConfiguration _config;
+        private readonly string _ownerRole;
         private readonly string _employeesUrl;
         private readonly string _employeeDetailsUrl;
         private readonly string _addNewEmployeeUrl;
@@ -26,6 +28,8 @@ namespace Restaurants_Webpage.Controllers
         {
             _config = config;
 
+            string ownerRole = _config["ApplicationSettings:AdministrativeRoles:Owner"].ToUpper();
+
             string employeesBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Employees"]);
 
             string employeeDetailsUrl = employeesBaseUrl + "/{0}";
@@ -39,8 +43,14 @@ namespace Restaurants_Webpage.Controllers
 
             string restaurantsBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Restaurants"]);
 
+
             try
             {
+                if (string.IsNullOrEmpty(ownerRole))
+                {
+                    throw new Exception("Owner role can't be empty");
+                }
+
                 if (string.IsNullOrEmpty(employeesBaseUrl))
                 {
                     throw new Exception("Employees base url can't be empty");
@@ -81,6 +91,7 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Rstaurants base url can't be empty");
                 }
 
+                _ownerRole = ownerRole;
                 _employeesUrl = employeesBaseUrl;
                 _employeeDetailsUrl = employeeDetailsUrl;
                 _employeeDeleteCertificateUrl = employeeDeleteCertificateUrl;
@@ -89,6 +100,7 @@ namespace Restaurants_Webpage.Controllers
                 _addNewEmployeeCertificateUrl = addNewEmployeeCertificateUrl;
                 _updateEmployeeCertificateUrl = updateEmployeeCertificateUrl;
                 _restaurantsUrl = restaurantsBaseUrl;
+
             }
             catch (Exception ex)
             {
@@ -100,13 +112,13 @@ namespace Restaurants_Webpage.Controllers
         public async Task<IActionResult> Employees()
         {
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("employees", "supervisor");
             }
 
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(_employeesUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(_employeesUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
@@ -127,13 +139,13 @@ namespace Restaurants_Webpage.Controllers
             if (idEmployee > 0)
             {
                 HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-                if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+                if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
                 {
                     TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                     return RedirectToAction("employees", "supervisor");
                 }
                 string url = string.Format(_employeeDetailsUrl, idEmployee);
-                var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
+                var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
                 if (response == null)
                 {
                     TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
@@ -159,14 +171,14 @@ namespace Restaurants_Webpage.Controllers
             }
 
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("employees", "supervisor");
             }
 
             string url = string.Format(_employeeDeleteCertificateUrl, idEmployee, idCertificate);
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.DELETE, null, jwtUtils.GetJwtCookie());
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.DELETE, null, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't delete certificate now, please try again later.";
@@ -203,7 +215,7 @@ namespace Restaurants_Webpage.Controllers
             }
 
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("employees", "supervisor");
@@ -218,7 +230,7 @@ namespace Restaurants_Webpage.Controllers
             }
 
             var body = JsonContent.Create(employeeModel);
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, method, body, jwtUtils.GetJwtCookie());
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, method, body, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
@@ -240,6 +252,7 @@ namespace Restaurants_Webpage.Controllers
             return RedirectToAction("employees", "supervisor");
         }
 
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> CertificateForm(int idEmployee, int idCertificate)
         {
             if (idEmployee <= 0)
@@ -249,14 +262,14 @@ namespace Restaurants_Webpage.Controllers
             }
 
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("employees", "supervisor");
             }
 
             string url = string.Format(_employeeDetailsUrl, idEmployee);
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
@@ -268,6 +281,7 @@ namespace Restaurants_Webpage.Controllers
             return View((employee, idCertificate));
         }
 
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> SetEmployeeCertificate(int idEmployee, int idCertificate, EmployeeCertificateModel certificate)
         {
             if (idEmployee <= 0)
@@ -285,7 +299,7 @@ namespace Restaurants_Webpage.Controllers
             }
 
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("employees", "supervisor");
@@ -296,7 +310,7 @@ namespace Restaurants_Webpage.Controllers
                 name = certificate.Name,
                 expirationDate = certificate.ExpirationDate
             });
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, method, body, jwtUtils.GetJwtCookie());
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, method, body, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
@@ -318,18 +332,37 @@ namespace Restaurants_Webpage.Controllers
             return RedirectToAction("certificateForm", "supervisor", new { idEmployee });
         }
 
-        public IActionResult Restaurants()
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> Restaurants()
         {
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()))
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("restaurants", "supervisor");
+                return View();
             }
 
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(_restaurantsUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return View();
+            }
 
+            if (response.IsSuccessStatusCode)
+            {
+                var restaurantsData = await response.Content.ReadAsStringAsync();
+                var restaurants = JsonConvert.DeserializeObject<IEnumerable<ExtendedRestaurantModel>>(restaurantsData);
+                if (_ownerRole.Equals(jwtUtils.GetJwtRequestCookieValue(JwtFields.ROLE, jwtUtils.GetJwtRequestCookie())))
+                {
+                    return View(restaurants);
+                }
 
-
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
 
             return View();
         }

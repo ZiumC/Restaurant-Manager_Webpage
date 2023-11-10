@@ -80,15 +80,15 @@ namespace Restaurants_Webpage.Controllers
         public async Task<IActionResult> MyReservations()
         {
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            string? cookieClientId = jwtUtils.GetJwtCookieValue(_jwtCookieIdClientFieldName);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()) || string.IsNullOrEmpty(cookieClientId))
+            string? cookieClientId = jwtUtils.GetJwtRequestCookieValue(_jwtCookieIdClientFieldName, jwtUtils.GetJwtRequestCookie());
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()) || string.IsNullOrEmpty(cookieClientId))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("index", "home");
             }
 
             string reservationUrl = string.Format(_clientDataUrl, cookieClientId);
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(reservationUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtCookie());
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(reservationUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't see your reservations. Please try again later.";
@@ -121,15 +121,15 @@ namespace Restaurants_Webpage.Controllers
             }
 
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            string? cookieClientId = jwtUtils.GetJwtCookieValue(_jwtCookieIdClientFieldName);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()) || string.IsNullOrEmpty(cookieClientId))
+            string? cookieClientId = jwtUtils.GetJwtRequestCookieValue(_jwtCookieIdClientFieldName, jwtUtils.GetJwtRequestCookie());
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()) || string.IsNullOrEmpty(cookieClientId))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("index", "home");
             }
 
             string url = string.Format(actionUrl, cookieClientId, idReservation);
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.PUT, null, jwtUtils.GetJwtCookie());
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.PUT, null, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
@@ -171,8 +171,8 @@ namespace Restaurants_Webpage.Controllers
             }
 
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            string? cookieClientId = jwtUtils.GetJwtCookieValue(_jwtCookieIdClientFieldName);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()) || string.IsNullOrEmpty(cookieClientId))
+            string? cookieClientId = jwtUtils.GetJwtRequestCookieValue(_jwtCookieIdClientFieldName, jwtUtils.GetJwtRequestCookie());
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()) || string.IsNullOrEmpty(cookieClientId))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("index", "home");
@@ -183,7 +183,7 @@ namespace Restaurants_Webpage.Controllers
                 message = message
             });
             string url = string.Format(_makeComplaintUrl, cookieClientId, idReservation);
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.POST, body, jwtUtils.GetJwtCookie());
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.POST, body, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
@@ -218,15 +218,15 @@ namespace Restaurants_Webpage.Controllers
             }
 
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            string? cookieClientId = jwtUtils.GetJwtCookieValue(_jwtCookieIdClientFieldName);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtCookie()) || string.IsNullOrEmpty(cookieClientId))
+            string? cookieClientId = jwtUtils.GetJwtRequestCookieValue(_jwtCookieIdClientFieldName, jwtUtils.GetJwtRequestCookie());
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()) || string.IsNullOrEmpty(cookieClientId))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
                 return RedirectToAction("index", "home");
             }
 
             string url = string.Format(_rateReservationUrl, cookieClientId, idReservation, grade);
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.PUT, null, jwtUtils.GetJwtCookie());
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.PUT, null, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";

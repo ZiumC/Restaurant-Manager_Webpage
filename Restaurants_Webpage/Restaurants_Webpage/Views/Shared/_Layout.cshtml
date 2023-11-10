@@ -4,8 +4,8 @@
 
 @{
     string accessTokenName = "AccessToken";
-    string clientRoleField = "role";
-    string clientNameField = "name";
+    string jwtRoleField = "role";
+    string jwtNameField = "name";
 
     string clientRoleName = "CLIENT";
     string supervisorRoleName = "SUPERVISOR";
@@ -19,8 +19,8 @@
     if (accessToken != null)
     {
         var tokenContent = new JwtSecurityTokenHandler().ReadToken(accessToken) as JwtSecurityToken;
-        userRole = tokenContent?.Claims.First(claim => claim.Type == clientRoleField).Value;
-        userName = tokenContent?.Claims.First(claim => claim.Type == clientNameField).Value;
+        userRole = tokenContent?.Claims.First(claim => claim.Type == jwtRoleField).Value;
+        userName = tokenContent?.Claims.First(claim => claim.Type == jwtNameField).Value;
     }
 
     var actionSucceeded = TempData["ActionSucceeded"];
@@ -70,7 +70,7 @@
                     <ul class="navbar-nav flex-grow-1">
                         @if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(userRole))
                         {
-                            @if (userRole == supervisorRoleName)
+                            @if (userRole == supervisorRoleName || userRole == ownerRoleName)
                             {
                                 <li>
                                     <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="employees">Employees</a>

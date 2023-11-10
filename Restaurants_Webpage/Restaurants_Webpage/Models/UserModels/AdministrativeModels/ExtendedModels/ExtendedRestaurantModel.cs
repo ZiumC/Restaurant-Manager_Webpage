@@ -12,5 +12,6 @@ namespace Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedMod
         public CommonAddressModel Address { get; set; }
         public IEnumerable<ExtendedDishModel> RestaurantDishes { get; set; }
         public IEnumerable<BasicEmployeeModel> RestaurantWorkers { get; set; }
+        public IEnumerable<CommonReservationModel> RestaurantReservations { get; set; }
     }
 }
