@@ -301,6 +301,12 @@ table.table-restaurant-header {
 	margin-bottom: 1ex;
 }
 
+.heading {
+	margin-top: 2ex;
+	margin-bottom: 1ex;
+	margin-left: 7ex;
+}
+
 .top-separator-3ex {
 	margin-top: 3ex;
 }
