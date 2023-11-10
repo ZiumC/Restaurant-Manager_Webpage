@@ -351,12 +351,15 @@ namespace Restaurants_Webpage.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                var restaurantsData = await response.Content.ReadAsStringAsync();
-                var restaurants = JsonConvert.DeserializeObject<IEnumerable<ExtendedRestaurantModel>>(restaurantsData);
+                var restaurantsJsonData = await response.Content.ReadAsStringAsync();
+                var restaurants = JsonConvert.DeserializeObject<IEnumerable<ExtendedRestaurantModel>>(restaurantsJsonData);
+
                 if (_ownerRole.Equals(jwtUtils.GetJwtRequestCookieValue(JwtFields.ROLE, jwtUtils.GetJwtRequestCookie())))
                 {
                     return View(restaurants);
                 }
+
+
 
             }
             else
