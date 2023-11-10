@@ -1,5 +1,5 @@
-﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.BasicModels;
-@model IEnumerable<BasicRestaurantModel>;
+﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
+@model IEnumerable<ExtendedRestaurantModel>;
 
 
 @{
@@ -46,15 +46,25 @@
                                                 <h5>Restaurant name:</h5>
                                             </th>
                                             <th>
-                                                <h5>Menu dishes:</h5>
+                                                <h5>Bonus (PLN):</h5>
                                             </th>
                                             <th>
-                                                <h5>Grade:</h5>
+                                                <h5>Status:</h5>
                                             </th>
                                         </tr>
+
                                     </thead>
                                     <tbody>
                                         <tr>
+                                            <td>
+                                                @restaurant.Name
+                                            </td>
+                                            <td>
+                                                @restaurant.BonusBudget
+                                            </td>
+                                            <td>
+                                                @restaurant.Status
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>

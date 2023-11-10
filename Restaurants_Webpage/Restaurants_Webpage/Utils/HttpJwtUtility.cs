@@ -1,20 +1,23 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.AspNetCore.Http;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Restaurants_Webpage.Utils
 {
     public enum JwtFields { NAME, ROLE, EMP_ID, CLIENT_ID }
     public class HttpJwtUtility
     {
-        private readonly string? _jwtCookie;
+        private readonly string _jwtCookieName;
         private readonly string _jwtCookieNameField;
         private readonly string _jwtCookieRoleField;
         private readonly string _jwtCookieEmpIdField;
         private readonly string _jwtCookieClientIdField;
+        private readonly HttpContext _httpContext;
         private readonly IConfiguration _config;
 
         public HttpJwtUtility(IConfiguration config, HttpContext httpContext)
         {
             _config = config;
+            _httpContext = httpContext;
 
             string jwtCookieName = _config["ApplicationSettings:JwtSettings:CookieSettings:CookieName"];
 
@@ -50,8 +53,7 @@ namespace Restaurants_Webpage.Utils
                     throw new Exception("Jwt cookie EmpId name can't be empty");
                 }
 
-                _jwtCookie = httpContext.Request.Cookies[jwtCookieName];
-
+                _jwtCookieName = jwtCookieName;
                 _jwtCookieNameField = jwtCookieNameField;
                 _jwtCookieRoleField = jwtCookieRoleField;
                 _jwtCookieClientIdField = jwtCookieClientIdField;
@@ -63,57 +65,48 @@ namespace Restaurants_Webpage.Utils
             }
         }
 
-        public string? GetJwtCookie() 
+        public string? GetJwtRequestCookie()
         {
-            return _jwtCookie;
+            return _httpContext.Request.Cookies[_jwtCookieName];
         }
 
-        public string? GetJwtCookieValue(string fieldName)
+        public string? GetJwtRequestCookieValue(string fieldName, string? jwtCookie)
         {
-            if (_jwtCookie != null)
-            {
-                var tokenContent = new JwtSecurityTokenHandler().ReadToken(_jwtCookie) as JwtSecurityToken;
-                return tokenContent?.Claims.First(claim => claim.Type == fieldName).Value;
-            }
+            var tokenContent = new JwtSecurityTokenHandler().ReadToken(jwtCookie) as JwtSecurityToken;
 
-            return null;
+            return tokenContent?.Claims.First(claim => claim.Type == fieldName).Value;
         }
 
-        public string? GetJwtCookieValue(JwtFields jwtCookieField)
+        public string? GetJwtRequestCookieValue(JwtFields jwtCookieField, string? jwtCookie)
         {
-            if (_jwtCookie != null)
+            string fieldName = "";
+
+            switch (jwtCookieField)
             {
+                case JwtFields.NAME:
+                    fieldName = _jwtCookieNameField;
+                    break;
 
-                string fieldName = "";
+                case JwtFields.ROLE:
+                    fieldName = _jwtCookieRoleField;
+                    break;
 
-                switch (jwtCookieField) 
-                {
-                    case JwtFields.NAME:
-                        fieldName = _jwtCookieNameField;
-                        break;
+                case JwtFields.EMP_ID:
+                    fieldName = _jwtCookieEmpIdField;
+                    break;
 
-                    case JwtFields.ROLE:
-                        fieldName = _jwtCookieRoleField;
-                        break;
+                case JwtFields.CLIENT_ID:
+                    fieldName = _jwtCookieClientIdField;
+                    break;
 
-                    case JwtFields.EMP_ID:
-                        fieldName = _jwtCookieEmpIdField;
-                        break;
-
-                    case JwtFields.CLIENT_ID:
-                        fieldName = _jwtCookieClientIdField;
-                        break;
-
-                    default: 
-                        return null;
-                }
-
-                var tokenContent = new JwtSecurityTokenHandler().ReadToken(_jwtCookie) as JwtSecurityToken;
-
-                return tokenContent?.Claims.First(claim => claim.Type == fieldName).Value;
+                default:
+                    return null;
             }
 
-            return null;
+            var tokenContent = new JwtSecurityTokenHandler().ReadToken(jwtCookie) as JwtSecurityToken;
+
+            return tokenContent?.Claims.First(claim => claim.Type == fieldName).Value;
+
         }
     }
 }
