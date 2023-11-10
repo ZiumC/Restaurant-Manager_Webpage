@@ -1,5 +1,5 @@
 ﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
-@model IEnumerable<ExtendedRestaurantModel>;
+@model (IEnumerable<ExtendedRestaurantModel> restaurants, string userRole)
 
 
 @{
@@ -8,8 +8,12 @@
     string collapse = "collapse_";
     string heading = "heading_";
 
-
+    string ownerRoleName = "OWNER";
     string newReservationStatus = "NEW";
+
+    IEnumerable<ExtendedRestaurantModel>? restaurants = Model.Item1;
+    string? userRole = Model.Item2;
+
 }
 
 <!DOCTYPE html>
@@ -26,7 +30,7 @@
         <div class="line-black"></div>
 
 
-        @if (Model == null || Model.Count() == 0)
+        @if (restaurants == null || restaurants.Count() == 0)
         {
             <div class="text-center">
                 <h4>There is no restaurants to show.</h4>
@@ -34,7 +38,7 @@
         }
         else
         {
-            foreach (var restaurant in Model)
+            foreach (var restaurant in restaurants)
             {
                 <div class="card">
                     <div class="header-card" id="@(@heading + restaurant.IdRestaurant)">
@@ -189,12 +193,15 @@
                                     <tbody class="text-center">
                                         <tr>
                                             <td>
-                                                <div class="btn-functional-container">
-                                                    <form asp-controller="" asp-action="" method="post">
-                                                        <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                                        <input type="submit" value="Edit data" class="btn btn-warning btn-functional action-menu" />
-                                                    </form>
-                                                </div>
+                                                @if (userRole != null && userRole == ownerRoleName)
+                                                {
+                                                    <div class="btn-functional-container">
+                                                        <form asp-controller="" asp-action="" method="post">
+                                                            <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                                            <input type="submit" value="Edit data" class="btn btn-warning btn-functional action-menu" />
+                                                        </form>
+                                                    </div>
+                                                }
                                                 <div class="btn-functional-container">
                                                     <form asp-controller="" asp-action="" method="post">
                                                         <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />

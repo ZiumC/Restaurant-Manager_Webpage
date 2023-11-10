@@ -201,12 +201,14 @@ namespace Restaurants_Webpage.Controllers
 
             if (response.IsSuccessStatusCode)
             {
+                string? userRole = jwtUtils.GetJwtRequestCookieValue(JwtFields.ROLE, jwtUtils.GetJwtRequestCookie());
+
                 var restaurantsJsonData = await response.Content.ReadAsStringAsync();
                 var restaurants = JsonConvert.DeserializeObject<IEnumerable<ExtendedRestaurantModel>>(restaurantsJsonData);
 
                 if (_ownerRole.Equals(jwtUtils.GetJwtRequestCookieValue(JwtFields.ROLE, jwtUtils.GetJwtRequestCookie())))
                 {
-                    return View(restaurants);
+                    return View((restaurants, userRole));
                 }
 
                 string? idEmployee = jwtUtils.GetJwtRequestCookieValue(JwtFields.EMP_ID, jwtUtils.GetJwtRequestCookie());
@@ -217,11 +219,11 @@ namespace Restaurants_Webpage.Controllers
                     {
                         var supervisorRestaurants = restaurants?
                             .Where(r => r.RestaurantWorkers.Any(rw => rw.IdEmployee == parsedIdEmployee))
-                            .ToList();
-                        return View(supervisorRestaurants);
+                            .ToList().AsEnumerable();
+                        return View((supervisorRestaurants, userRole));
                     }
                 }
-
+                TempData["ActionFailed"] = "Something went wrong, unable to display restaurants at the moment. Please contact with administrator.";
                 return View();
             }
             else
