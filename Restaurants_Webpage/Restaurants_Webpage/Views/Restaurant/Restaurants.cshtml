@@ -203,7 +203,7 @@
                                                     </div>
                                                 }
                                                 <div class="btn-functional-container">
-                                                    <form asp-controller="" asp-action="" method="post">
+                                                    <form asp-controller="restaurant" asp-action="dishForm" method="post">
                                                         <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                                         <input type="submit" value="Add dish" class="btn btn-success btn-functional action-menu" />
                                                     </form>
@@ -235,8 +235,9 @@
                                                         <td>@String.Format("{0:0.00}", dish.Price)</td>
                                                         <td>
                                                             <div class="btn-functional-container">
-                                                                <form asp-controller="" asp-action="" method="post">
+                                                                <form asp-controller="restaurant" asp-action="dishForm" method="post">
                                                                     <input type="hidden" name="idDish" value="@dish.IdDish" />
+                                                                    <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                                                     <input type="submit" value="Edit" class="btn btn-warning btn-functional-table action-menu" />
                                                                 </form>
                                                             </div>

@@ -13,6 +13,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _makeReservationUrl;
         private readonly string _jwtCookieIdClientFieldName;
         private readonly string _restaurantsUrl;
+        private readonly string _restaurantDetailsUrl;
         private readonly string _ownerRole;
         private readonly IConfiguration _config;
 
@@ -29,6 +30,7 @@ namespace Restaurants_Webpage.Controllers
             string jwtCookieIdClientFieldName = _config["ApplicationSettings:UserSettings:CookieSettings:Client:IdName"];
 
             string restaurantsBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Restaurants"]);
+            string restaurantDetailsUrl = restaurantsBaseUrl + "/{0}";
 
             try
             {
@@ -57,11 +59,17 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Rstaurants base url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(restaurantDetailsUrl))
+                {
+                    throw new Exception("Rstaurants details url can't be empty");
+                }
+
                 _ownerRole = ownerRole;
                 _restaurantMenuUrl = restaurantMenuUrl;
                 _makeReservationUrl = makeReservationUrl;
                 _jwtCookieIdClientFieldName = jwtCookieIdClientFieldName;
                 _restaurantsUrl = restaurantsBaseUrl;
+                _restaurantDetailsUrl = restaurantDetailsUrl;
 
 
             }
@@ -225,6 +233,46 @@ namespace Restaurants_Webpage.Controllers
                 }
                 TempData["ActionFailed"] = "Something went wrong, unable to display restaurants at the moment. Please contact with administrator.";
                 return View();
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
+
+            return View();
+        }
+
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> DishForm(int idDish, int idRestaurant)
+        {
+            if (idRestaurant <= 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return View();
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            string? userRole = jwtUtils.GetJwtRequestCookieValue(JwtFields.ROLE, jwtUtils.GetJwtRequestCookie());
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("employees", "supervisor");
+            }
+
+            string url = string.Format(_restaurantDetailsUrl, idRestaurant);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return View();
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                var restaurantsJsonData = await response.Content.ReadAsStringAsync();
+                var restaurants = JsonConvert.DeserializeObject<ExtendedRestaurantModel>(restaurantsJsonData);
+
+                return View((restaurants, idDish, userRole));
             }
             else
             {
