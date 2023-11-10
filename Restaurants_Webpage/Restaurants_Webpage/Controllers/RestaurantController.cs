@@ -6,6 +6,7 @@ using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
 using Restaurants_Webpage.Models.UserModels.ClientModels.ClientRestaurantModels;
 using Restaurants_Webpage.Utils;
 using Restaurants_Webpage.Utils.Validator;
+using System;
 
 namespace Restaurants_Webpage.Controllers
 {
@@ -16,6 +17,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _jwtCookieIdClientFieldName;
         private readonly string _restaurantsUrl;
         private readonly string _restaurantDetailsUrl;
+        private readonly string _restaurantDishesUrl;
         private readonly string _restaurantDishUrl;
         private readonly string _ownerRole;
         private readonly IConfiguration _config;
@@ -34,7 +36,9 @@ namespace Restaurants_Webpage.Controllers
 
             string restaurantsBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Restaurants"]);
             string restaurantDetailsUrl = restaurantsBaseUrl + "/{0}";
-            string restaurantDishUrl = restaurantsBaseUrl + _config["Endpoints:Paths:Dishes"];
+            string restaurantDishesUrl = restaurantsBaseUrl + _config["Endpoints:Paths:Dishes"];
+            string restaurantDishUrl = restaurantsBaseUrl + _config["Endpoints:Paths:Dish"];
+
 
 
             try
@@ -69,6 +73,11 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Rstaurants details url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(restaurantDishesUrl))
+                {
+                    throw new Exception("Rstaurants dishes url can't be empty");
+                }
+
                 if (string.IsNullOrEmpty(restaurantDishUrl))
                 {
                     throw new Exception("Rstaurants dishes url can't be empty");
@@ -80,6 +89,7 @@ namespace Restaurants_Webpage.Controllers
                 _jwtCookieIdClientFieldName = jwtCookieIdClientFieldName;
                 _restaurantsUrl = restaurantsBaseUrl;
                 _restaurantDetailsUrl = restaurantDetailsUrl;
+                _restaurantDishesUrl = restaurantDishesUrl;
                 _restaurantDishUrl = restaurantDishUrl;
 
             }
@@ -283,7 +293,7 @@ namespace Restaurants_Webpage.Controllers
                 var restaurant = JsonConvert.DeserializeObject<ExtendedRestaurantModel>(restaurantsJsonData);
 
                 var dishResponse = await HttpRequestUtility
-                    .SendSecureRequestJwtAsync(_restaurantDishUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+                    .SendSecureRequestJwtAsync(_restaurantDishesUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
 
                 if (dishResponse != null)
                 {
@@ -306,7 +316,7 @@ namespace Restaurants_Webpage.Controllers
             return View();
         }
 
-        public async Task<IActionResult> AddDishToRestaurant(int idRestaurant, BasicDishModel dish) 
+        public async Task<IActionResult> AddDishToRestaurant(int idRestaurant, BasicDishModel dish)
         {
             if (idRestaurant <= 0)
             {
@@ -327,9 +337,30 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("employees", "supervisor");
             }
 
+            var body = JsonContent.Create(new
+            {
+                name = dish.Name,
+                price = dish.Price,
+                idRestaurants = new List<int> { idRestaurant }
+            });
+            var response = await HttpRequestUtility
+                .SendSecureRequestJwtAsync(_restaurantDishUrl, Utils.HttpMethods.POST, body, jwtUtils.GetJwtRequestCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return RedirectToAction("restaurants", "restaurant");
+            }
 
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["ActionSucceeded"] = $"Dish has been added to restaurant!";
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
 
-            return View();
+            return RedirectToAction("dish", "restaurant", new { idRestaurant });
         }
     }
 }
