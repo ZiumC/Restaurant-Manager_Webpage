@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Restaurants_Webpage.Models.UserModels.AdministrativeModels.BasicModels;
 using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
 using Restaurants_Webpage.Models.UserModels.ClientModels.ClientRestaurantModels;
 using Restaurants_Webpage.Utils;
@@ -14,6 +15,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _jwtCookieIdClientFieldName;
         private readonly string _restaurantsUrl;
         private readonly string _restaurantDetailsUrl;
+        private readonly string _dishesUrl;
         private readonly string _ownerRole;
         private readonly IConfiguration _config;
 
@@ -31,6 +33,8 @@ namespace Restaurants_Webpage.Controllers
 
             string restaurantsBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Restaurants"]);
             string restaurantDetailsUrl = restaurantsBaseUrl + "/{0}";
+            string dishesUrl = restaurantsBaseUrl + _config["Endpoints:Paths:Dishes"];
+
 
             try
             {
@@ -64,13 +68,18 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Rstaurants details url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(dishesUrl))
+                {
+                    throw new Exception("Rstaurants dishes url can't be empty");
+                }
+
                 _ownerRole = ownerRole;
                 _restaurantMenuUrl = restaurantMenuUrl;
                 _makeReservationUrl = makeReservationUrl;
                 _jwtCookieIdClientFieldName = jwtCookieIdClientFieldName;
                 _restaurantsUrl = restaurantsBaseUrl;
                 _restaurantDetailsUrl = restaurantDetailsUrl;
-
+                _dishesUrl = dishesUrl;
 
             }
             catch (Exception ex)
@@ -260,23 +269,37 @@ namespace Restaurants_Webpage.Controllers
             }
 
             string url = string.Format(_restaurantDetailsUrl, idRestaurant);
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
-            if (response == null)
+            var restaurantResponse = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+            if (restaurantResponse == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
                 return View();
             }
 
-            if (response.IsSuccessStatusCode)
+            if (restaurantResponse.IsSuccessStatusCode)
             {
-                var restaurantsJsonData = await response.Content.ReadAsStringAsync();
-                var restaurants = JsonConvert.DeserializeObject<ExtendedRestaurantModel>(restaurantsJsonData);
+                var restaurantsJsonData = await restaurantResponse.Content.ReadAsStringAsync();
+                var restaurant = JsonConvert.DeserializeObject<ExtendedRestaurantModel>(restaurantsJsonData);
 
-                return View((restaurants, idDish, userRole));
+                var dishResponse = await HttpRequestUtility
+                    .SendSecureRequestJwtAsync(_dishesUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+
+                if (dishResponse != null)
+                {
+                    var dishes = await HttpRequestUtility.DeserializeResponse<IEnumerable<BasicDishModel>>(dishResponse);
+                    var notAssignedDishesToRestaurant = dishes?
+                        .Where(d => d.Restaurants.All(r => !r.Equals(restaurant?.Name)))
+                        .ToList()
+                        .AsEnumerable();
+
+                    return View((restaurant, idDish, userRole, notAssignedDishesToRestaurant));
+                }
+
+                return View((restaurant, idDish, userRole));
             }
             else
             {
-                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(restaurantResponse);
             }
 
             return View();
