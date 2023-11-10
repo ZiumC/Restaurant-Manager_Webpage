@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using Newtonsoft.Json;
+using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
 
 namespace Restaurants_Webpage.Utils
 {
@@ -100,6 +101,12 @@ namespace Restaurants_Webpage.Utils
             }
 
             return responseMessage;
+        }
+
+        public static async Task<T?> DeserializeResponse<T>(HttpResponseMessage response)
+        {
+            string responseMessageJson = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(responseMessageJson);
         }
     }
 }

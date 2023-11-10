@@ -1,5 +1,6 @@
-﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
-@model (ExtendedRestaurantModel restaurant, int idDish, string userRole)
+﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.BasicModels;
+@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
+@model (ExtendedRestaurantModel restaurant, int idDish, string userRole, IEnumerable<BasicDishModel> notAssignedDishes)
 
 @{
     var restaurant = Model.restaurant;
@@ -7,7 +8,7 @@
     var selectedDish = restaurant?.RestaurantDishes?
                             .Where(d => d.IdDish == Model.idDish)
                             .FirstOrDefault();
-
+    var notAssignedDishes = Model.notAssignedDishes;
 
     string pageTitle = "Add new dish";
     if (selectedDish != null)
@@ -166,7 +167,49 @@
                 <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
             </div>
         </form>
-        <h5 class="heading">Dishes that not assigned to restaurant '@restaurant?.Name'</h5>
+        @{
+            if (notAssignedDishes != null && notAssignedDishes.Count() > 0 && restaurant != null)
+            {
+                <h5 class="heading">Dishes that not assigned to restaurant '@restaurant.Name'</h5>
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Dish</th>
+                            <th scope="col">Price (PLN)</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int rowCounter = 1;
+                            foreach (var dish in notAssignedDishes)
+                            {
+                                string dishName = dish.DishName;
+                                string dishPrice = string.Format("{0:0.00}", dish.DishPrice);
+                                <tr>
+                                    <th scope="row">@rowCounter</th>
+                                    <td>@dishName</td>
+                                    <td>@dishPrice</td>
+                                    <td>
+                                        <div class="btn-functional-container">
+                                            <form asp-controller="" asp-action="" method="post">
+                                                <input type="hidden" name="idDish" value="@dish.IdDish" />
+                                                <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                                <input type="submit" value="Assign" class="btn btn-success btn-functional-table action-menu" />
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                rowCounter++;
+                            }
+                        }
+                    </tbody>
+                </table>
+
+            }
+        }
+
     </div>
 </body>
 </html>
