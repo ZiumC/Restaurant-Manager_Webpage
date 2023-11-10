@@ -301,6 +301,10 @@ table.table-restaurant-header {
 	margin-bottom: 1ex;
 }
 
+.top-separator-3ex {
+	margin-top: 3ex;
+}
+
 @media all and (max-width: 550px) {
 	a .btn-functional {
 		font-size: 2ex;

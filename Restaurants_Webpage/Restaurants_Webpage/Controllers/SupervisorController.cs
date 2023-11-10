@@ -13,7 +13,6 @@ namespace Restaurants_Webpage.Controllers
     public class SupervisorController : Controller
     {
         private readonly IConfiguration _config;
-        private readonly string _ownerRole;
         private readonly string _employeesUrl;
         private readonly string _employeeDetailsUrl;
         private readonly string _addNewEmployeeUrl;
@@ -21,14 +20,11 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _addNewEmployeeCertificateUrl;
         private readonly string _updateEmployeeCertificateUrl;
         private readonly string _employeeDeleteCertificateUrl;
-        private readonly string _restaurantsUrl;
 
 
         public SupervisorController(IConfiguration config)
         {
             _config = config;
-
-            string ownerRole = _config["ApplicationSettings:AdministrativeRoles:Owner"].ToUpper();
 
             string employeesBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Employees"]);
 
@@ -41,16 +37,9 @@ namespace Restaurants_Webpage.Controllers
             string addNewEmployeeCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"];
             string updateEmployeeCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"] + "/{1}";
 
-            string restaurantsBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Restaurants"]);
-
 
             try
             {
-                if (string.IsNullOrEmpty(ownerRole))
-                {
-                    throw new Exception("Owner role can't be empty");
-                }
-
                 if (string.IsNullOrEmpty(employeesBaseUrl))
                 {
                     throw new Exception("Employees base url can't be empty");
@@ -86,12 +75,6 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Update employee certificate url can't be empty");
                 }
 
-                if (string.IsNullOrEmpty(restaurantsBaseUrl))
-                {
-                    throw new Exception("Rstaurants base url can't be empty");
-                }
-
-                _ownerRole = ownerRole;
                 _employeesUrl = employeesBaseUrl;
                 _employeeDetailsUrl = employeeDetailsUrl;
                 _employeeDeleteCertificateUrl = employeeDeleteCertificateUrl;
@@ -99,7 +82,6 @@ namespace Restaurants_Webpage.Controllers
                 _updateEmployeeUrl = updateEmployeeUrl;
                 _addNewEmployeeCertificateUrl = addNewEmployeeCertificateUrl;
                 _updateEmployeeCertificateUrl = updateEmployeeCertificateUrl;
-                _restaurantsUrl = restaurantsBaseUrl;
 
             }
             catch (Exception ex)
@@ -332,42 +314,5 @@ namespace Restaurants_Webpage.Controllers
             return RedirectToAction("certificateForm", "supervisor", new { idEmployee });
         }
 
-        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> Restaurants()
-        {
-            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
-            {
-                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return View();
-            }
-
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(_restaurantsUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
-            if (response == null)
-            {
-                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
-                return View();
-            }
-
-            if (response.IsSuccessStatusCode)
-            {
-                var restaurantsJsonData = await response.Content.ReadAsStringAsync();
-                var restaurants = JsonConvert.DeserializeObject<IEnumerable<ExtendedRestaurantModel>>(restaurantsJsonData);
-
-                if (_ownerRole.Equals(jwtUtils.GetJwtRequestCookieValue(JwtFields.ROLE, jwtUtils.GetJwtRequestCookie())))
-                {
-                    return View(restaurants);
-                }
-
-
-
-            }
-            else
-            {
-                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
-            }
-
-            return View();
-        }
     }
 }
