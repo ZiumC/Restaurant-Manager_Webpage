@@ -103,7 +103,7 @@
                                 <td>@dishPrice</td>
                                 <td>
                                     <div>
-                                        <form asp-controller="" asp-action="" method="post">
+                                        <form asp-controller="restaurant" asp-action="removeDishFromRestaurant" method="post">
                                             <input type="hidden" name="idDish" value="@dish.IdDish" />
                                             <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                             <input type="submit" value="Remove" class="btn btn-danger btn-functional-table action-menu" />
@@ -143,7 +143,7 @@
                                     <td>@dishPrice</td>
                                     <td>
                                         <div class="btn-functional-container">
-                                            <form asp-controller="" asp-action="" method="post">
+                                            <form asp-controller="restaurant" asp-action="assignDishToRestaurant" method="post">
                                                 <input type="hidden" name="idDish" value="@dish.IdDish" />
                                                 <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                                 <input type="submit" value="Assign" class="btn btn-success btn-functional-table action-menu" />
