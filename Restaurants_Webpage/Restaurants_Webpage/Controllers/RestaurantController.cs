@@ -19,6 +19,7 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _restaurantDetailsUrl;
         private readonly string _restaurantDishesUrl;
         private readonly string _restaurantDishUrl;
+        private readonly string _restaurantRemoveDishUrl;
         private readonly string _ownerRole;
         private readonly IConfiguration _config;
 
@@ -39,6 +40,7 @@ namespace Restaurants_Webpage.Controllers
             string restaurantDishesUrl = restaurantsBaseUrl + _config["Endpoints:Paths:Dishes"];
             string restaurantDishUrl = restaurantsBaseUrl + _config["Endpoints:Paths:Dish"];
 
+            string restaurantRemoveDishUrl = restaurantsBaseUrl + "/{0}" + _config["Endpoints:Paths:Dish"] + "/{1}";
 
 
             try
@@ -83,6 +85,11 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Rstaurants dishes url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(restaurantRemoveDishUrl))
+                {
+                    throw new Exception("Rstaurant remove dish url can't be empty");
+                }
+
                 _ownerRole = ownerRole;
                 _restaurantMenuUrl = restaurantMenuUrl;
                 _makeReservationUrl = makeReservationUrl;
@@ -91,6 +98,7 @@ namespace Restaurants_Webpage.Controllers
                 _restaurantDetailsUrl = restaurantDetailsUrl;
                 _restaurantDishesUrl = restaurantDishesUrl;
                 _restaurantDishUrl = restaurantDishUrl;
+                _restaurantRemoveDishUrl = restaurantRemoveDishUrl;
 
             }
             catch (Exception ex)
@@ -316,6 +324,7 @@ namespace Restaurants_Webpage.Controllers
             return View();
         }
 
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> AddDishToRestaurant(int idRestaurant, BasicDishModel dish)
         {
             if (idRestaurant <= 0)
@@ -361,6 +370,80 @@ namespace Restaurants_Webpage.Controllers
             }
 
             return RedirectToAction("dish", "restaurant", new { idRestaurant });
+        }
+
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> RemoveDishFromRestaurant(int idRestaurant, int idDish) 
+        {
+            if (idRestaurant <= 0 || idDish <= 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("employees", "supervisor");
+            }
+
+            string url = string.Format(_restaurantRemoveDishUrl, idRestaurant, idDish);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.DELETE, null, jwtUtils.GetJwtRequestCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["ActionSucceeded"] = $"Dish has been removed from restaurant!";
+                return RedirectToAction("dish", "restaurant", new { idRestaurant });
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
+
+            return RedirectToAction("restaurants", "restaurant");
+        }
+
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> AssignDishToRestaurant(int idRestaurant, int idDish)
+        {
+            if (idRestaurant <= 0 || idDish <= 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("employees", "supervisor");
+            }
+
+            string url = string.Format(_restaurantRemoveDishUrl, idRestaurant, idDish);
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.POST, null, jwtUtils.GetJwtRequestCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["ActionSucceeded"] = $"Dish has been assigned to restaurant!";
+                return RedirectToAction("dish", "restaurant", new { idRestaurant });
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
+
+            return RedirectToAction("restaurants", "restaurant");
         }
     }
 }
