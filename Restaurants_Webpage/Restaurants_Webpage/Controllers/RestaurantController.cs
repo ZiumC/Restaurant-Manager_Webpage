@@ -279,9 +279,9 @@ namespace Restaurants_Webpage.Controllers
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> Dish(int idRestaurant)
+        public async Task<IActionResult> DishForm(int idRestaurant, int idDish)
         {
-            if (idRestaurant <= 0)
+            if (idRestaurant <= 0 && idDish <= 0)
             {
                 TempData["ActionFailed"] = "Did you modified request?";
                 return View();
@@ -296,37 +296,51 @@ namespace Restaurants_Webpage.Controllers
             }
 
             string url = string.Format(_restaurantDetailsUrl, idRestaurant);
-            var restaurantResponse = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
-            if (restaurantResponse == null)
+            if (idDish > 0)
+            {
+                url = string.Format(_restaurantDishDetailsUrl, idDish);
+            }
+
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+            if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
                 return View();
             }
 
-            if (restaurantResponse.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                var restaurantsJsonData = await restaurantResponse.Content.ReadAsStringAsync();
-                var restaurant = JsonConvert.DeserializeObject<ExtendedRestaurantModel>(restaurantsJsonData);
-
-                var dishResponse = await HttpRequestUtility
-                    .SendSecureRequestJwtAsync(_restaurantDishesUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
-
-                if (dishResponse != null)
+                if (idDish > 0)
                 {
-                    var dishes = await HttpRequestUtility.DeserializeResponse<IEnumerable<ExtendedDishModel>>(dishResponse);
-                    var notAssignedDishesToRestaurant = dishes?
-                        .Where(d => d.Restaurants.All(r => !r.Equals(restaurant?.Name)))
-                        .ToList()
-                        .AsEnumerable();
-
-                    return View((restaurant, notAssignedDishesToRestaurant));
+                    var dish = await HttpRequestUtility.DeserializeResponse<BasicDishModel>(response);
+                    return View((new ExtendedRestaurantModel(), new List<ExtendedDishModel>().AsEnumerable(), dish));
                 }
+                else
+                {
 
-                return View((restaurant));
+                    var restaurantsJsonData = await response.Content.ReadAsStringAsync();
+                    var restaurant = JsonConvert.DeserializeObject<ExtendedRestaurantModel>(restaurantsJsonData);
+
+                    var dishResponse = await HttpRequestUtility
+                        .SendSecureRequestJwtAsync(_restaurantDishesUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+
+                    if (dishResponse != null)
+                    {
+                        var dishes = await HttpRequestUtility.DeserializeResponse<IEnumerable<ExtendedDishModel>>(dishResponse);
+                        var notAssignedDishesToRestaurant = dishes?
+                            .Where(d => d.Restaurants.All(r => !r.Equals(restaurant?.Name)))
+                            .ToList()
+                            .AsEnumerable();
+
+                        return View((restaurant, notAssignedDishesToRestaurant, new BasicDishModel()));
+                    }
+
+                    return View((restaurant, new List<ExtendedDishModel>().AsEnumerable(), new BasicDishModel()));
+                }
             }
             else
             {
-                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(restaurantResponse);
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
             }
 
             return View();
@@ -381,7 +395,7 @@ namespace Restaurants_Webpage.Controllers
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> RemoveDishFromRestaurant(int idRestaurant, int idDish) 
+        public async Task<IActionResult> RemoveDishFromRestaurant(int idRestaurant, int idDish)
         {
             if (idRestaurant <= 0 || idDish <= 0)
             {
@@ -452,42 +466,6 @@ namespace Restaurants_Webpage.Controllers
             }
 
             return RedirectToAction("restaurants", "restaurant");
-        }
- 
-        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> DishForm(int idDish)
-        {
-            if (idDish <= 0)
-            {
-                TempData["ActionFailed"] = "Did you modified request?";
-                return RedirectToAction("restaurants", "restaurant");
-            }
-
-            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
-            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
-            {
-                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("restaurants", "restaurant");
-            }
-
-            string url = string.Format(_restaurantDishDetailsUrl, idDish);
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
-            if (response == null)
-            {
-                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
-                return RedirectToAction("restaurants", "restaurant");
-            }
-
-            if (response.IsSuccessStatusCode)
-            {
-                var dish = await HttpRequestUtility.DeserializeResponse<BasicDishModel>(response);
-                return View(dish);
-            }
-            else
-            {
-                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
-            }
-            return View();
         }
     }
 }
