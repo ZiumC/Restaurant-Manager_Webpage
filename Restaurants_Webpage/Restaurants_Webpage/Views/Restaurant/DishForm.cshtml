@@ -53,7 +53,7 @@
                             </div>
                         </td>
 
-                        @if (editDish.Name != null)
+                        @if (editDish?.Name != null)
                         {
                             <input type="hidden" name="idDish" value="@editDish?.IdDish" />
                         }
@@ -98,7 +98,7 @@
                 <input type="submit" value="Cancel" class="btn btn-danger btn-functional action-menu" />
             </div>
         </form>
-        @if (editDish.Name == null)
+        @if (editDish?.Name == null)
         {
             @if (restaurant?.RestaurantDishes == null || restaurant.RestaurantDishes.Count() == 0)
             {
