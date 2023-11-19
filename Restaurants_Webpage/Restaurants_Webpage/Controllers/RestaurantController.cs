@@ -358,7 +358,7 @@ namespace Restaurants_Webpage.Controllers
             if (DishValidator.IsDefectedDish(dish))
             {
                 TempData["FormError"] = "Dish data is invalid";
-                return RedirectToAction("dish", "restaurant", new { idRestaurant });
+                return RedirectToAction("dishForm", "restaurant", new { idRestaurant });
             }
 
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
@@ -391,7 +391,7 @@ namespace Restaurants_Webpage.Controllers
                 TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
             }
 
-            return RedirectToAction("dish", "restaurant", new { idRestaurant });
+            return RedirectToAction("dishForm", "restaurant", new { idRestaurant });
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
@@ -421,7 +421,7 @@ namespace Restaurants_Webpage.Controllers
             if (response.IsSuccessStatusCode)
             {
                 TempData["ActionSucceeded"] = $"Dish has been removed from restaurant!";
-                return RedirectToAction("dish", "restaurant", new { idRestaurant });
+                return RedirectToAction("dishForm", "restaurant", new { idRestaurant });
             }
             else
             {
@@ -458,7 +458,7 @@ namespace Restaurants_Webpage.Controllers
             if (response.IsSuccessStatusCode)
             {
                 TempData["ActionSucceeded"] = $"Dish has been assigned to restaurant!";
-                return RedirectToAction("dish", "restaurant", new { idRestaurant });
+                return RedirectToAction("dishForm", "restaurant", new { idRestaurant });
             }
             else
             {
