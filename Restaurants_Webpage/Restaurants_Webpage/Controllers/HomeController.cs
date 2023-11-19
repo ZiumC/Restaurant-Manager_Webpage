@@ -21,7 +21,7 @@ namespace Restaurants_Webpage.Controllers
 
 
             string clientBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Clients"]);
-            string restaurantsListUrl = string.Concat(clientBaseUrl,_config["Endpoints:Paths:Restaurant"]);
+            string restaurantsListUrl = string.Concat(clientBaseUrl,_config["Endpoints:Paths:Restaurants"]);
 
             try
             {

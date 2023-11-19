@@ -30,7 +30,7 @@ namespace Restaurants_Webpage.Controllers
             string ownerRole = _config["ApplicationSettings:AdministrativeRoles:Owner"].ToUpper();
 
             string restaurantClientsBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Clients"]);
-            string restaurantMenuUrl = string.Concat(restaurantClientsBaseUrl, _config["Endpoints:Paths:Restaurant"]);
+            string restaurantMenuUrl = string.Concat(restaurantClientsBaseUrl, _config["Endpoints:Paths:Restaurants"]);
             string makeReservationUrl = string.Concat(restaurantClientsBaseUrl + "/{0}", _config["Endpoints:Paths:Reservation"]);
 
             string jwtCookieIdClientFieldName = _config["ApplicationSettings:UserSettings:CookieSettings:Client:IdName"];
