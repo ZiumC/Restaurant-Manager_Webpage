@@ -8,6 +8,6 @@ namespace Restaurants_Webpage.Models.UserModels.ClientModels.ClientRestaurantMod
         public string Name { get; set; }
         public CommonAddressModel Address { get; set; }
         public IEnumerable<RestaurantDishModel> Menu { get; set; }
-        public int? Grade { get; set; }
+        public double? Grade { get; set; }
     }
 }

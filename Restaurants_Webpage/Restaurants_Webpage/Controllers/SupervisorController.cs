@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Restaurants_Webpage.Models.CommonModels;
-using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
 using Restaurants_Webpage.Models.UserModels.EmployeeModels;
 using Restaurants_Webpage.Utils;
 using Restaurants_Webpage.Utils.Validator;
-using System;
 
 namespace Restaurants_Webpage.Controllers
 {
@@ -20,10 +18,12 @@ namespace Restaurants_Webpage.Controllers
         private readonly string _addNewEmployeeCertificateUrl;
         private readonly string _updateEmployeeCertificateUrl;
         private readonly string _employeeDeleteCertificateUrl;
+        private readonly string _restarantEmployeesUrl;
 
 
         public SupervisorController(IConfiguration config)
         {
+
             _config = config;
 
             string employeesBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Employees"]);
@@ -37,6 +37,7 @@ namespace Restaurants_Webpage.Controllers
             string addNewEmployeeCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"];
             string updateEmployeeCertificateUrl = employeesBaseUrl + "/{0}" + _config["Endpoints:Paths:Certificate"] + "/{1}";
 
+            string restarantEmployeesUrl = employeesBaseUrl + _config["Endpoints:Paths:Restaurant"] + "/{0}";
 
             try
             {
@@ -75,6 +76,11 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Update employee certificate url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(restarantEmployeesUrl))
+                {
+                    throw new Exception("Restaurant employess url can't be empty");
+                }
+
                 _employeesUrl = employeesBaseUrl;
                 _employeeDetailsUrl = employeeDetailsUrl;
                 _employeeDeleteCertificateUrl = employeeDeleteCertificateUrl;
@@ -82,6 +88,7 @@ namespace Restaurants_Webpage.Controllers
                 _updateEmployeeUrl = updateEmployeeUrl;
                 _addNewEmployeeCertificateUrl = addNewEmployeeCertificateUrl;
                 _updateEmployeeCertificateUrl = updateEmployeeCertificateUrl;
+                _restarantEmployeesUrl = restarantEmployeesUrl;
 
             }
             catch (Exception ex)
@@ -91,28 +98,40 @@ namespace Restaurants_Webpage.Controllers
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> Employees()
+        public async Task<IActionResult> Employees(int idRestaurant)
         {
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
             if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("employees", "supervisor");
+                return RedirectToAction("employees", "supervisor", new { idRestaurant });
             }
 
-            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(_employeesUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+            string url = _employeesUrl;
+            string? idRestaurantString = TempData["IdRestaurant"]?.ToString();
+            if (idRestaurant > 0)
+            {
+                url = string.Format(_restarantEmployeesUrl, idRestaurant);
+            }
+            //needs to workin it but later
+            //else if (idRestaurantString != null && !idRestaurantString.Equals("0"))
+            //{
+            //    url = string.Format(_restarantEmployeesUrl, idRestaurantString);
+            //    idRestaurant = int.Parse(idRestaurantString);
+            //}
+
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server. You can't make a new reservation, please try again later.";
-                return RedirectToAction("employees", "supervisor");
+                return RedirectToAction("employees", "supervisor", new { idRestaurant });
             }
 
             var contentResponse = await response.Content.ReadAsStringAsync();
             var employees = JsonConvert.DeserializeObject<IEnumerable<EmployeeModel>>(contentResponse);
 
 
-            return View(employees);
-
+            return View((employees, idRestaurant));
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
@@ -186,7 +205,7 @@ namespace Restaurants_Webpage.Controllers
         /// <param name="addressModel"></param>
         /// <returns></returns>
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> SetEmployee(EmployeeModel employeeModel, CommonAddressModel addressModel, int idEmployee)
+        public async Task<IActionResult> SetEmployee(EmployeeModel employeeModel, CommonAddressModel addressModel, int idEmployee, int idRestaurant)
         {
             employeeModel.Address = addressModel;
             if (EmployeeValidator.IsDefectedEmployee(employeeModel, _config))
@@ -200,7 +219,7 @@ namespace Restaurants_Webpage.Controllers
             if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
             {
                 TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
-                return RedirectToAction("employees", "supervisor");
+                return RedirectToAction("employees", "supervisor", new { idRestaurant });
             }
 
             var method = Utils.HttpMethods.POST;
@@ -216,7 +235,7 @@ namespace Restaurants_Webpage.Controllers
             if (response == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
-                return RedirectToAction("employees", "supervisor");
+                return RedirectToAction("employees", "supervisor", new { idRestaurant });
             }
 
             if (response.IsSuccessStatusCode)
@@ -231,7 +250,7 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("employeeForm", "supervisor");
             }
 
-            return RedirectToAction("employees", "supervisor");
+            return RedirectToAction("employees", "supervisor", new { idRestaurant });
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]

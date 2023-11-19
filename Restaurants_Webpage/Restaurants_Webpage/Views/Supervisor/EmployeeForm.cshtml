@@ -1,10 +1,11 @@
 ﻿@using Restaurants_Webpage.Models.UserModels.EmployeeModels;
-@model EmployeeModel;
+@model EmployeeModel
 
 @{
     var employee = Model;
+
     string pageTitle = "Add new employee";
-    if (Model != null)
+    if (employee != null)
     {
         pageTitle = $"Edit employee {employee.FirstName}";
     }

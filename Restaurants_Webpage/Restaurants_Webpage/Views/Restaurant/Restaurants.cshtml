@@ -208,6 +208,12 @@
                                                         <input type="submit" value="Add dish" class="btn btn-success btn-functional action-menu" />
                                                     </form>
                                                 </div>
+                                                <div class="btn-functional-container">
+                                                    <form asp-controller="supervisor" asp-action="employees" method="post">
+                                                        <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                                        <input type="submit" value="Employees" class="btn btn-primary btn-functional action-menu" />
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>

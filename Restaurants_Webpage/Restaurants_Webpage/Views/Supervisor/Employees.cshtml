@@ -1,12 +1,21 @@
 ﻿@using Restaurants_Webpage.Models.UserModels.EmployeeModels;
-@model IEnumerable<EmployeeModel>;
+@model (IEnumerable<EmployeeModel> employees, int idRestaurant);
 
 @{
     ViewData["Title"] = $"All employees";
     string collapse = "collapse_";
     string heading = "heading_";
 
-    var employees = Model;
+    var employees = Model.employees;
+    int idRestaurant = Model.idRestaurant;
+
+    string title = "Employees from all restaurants";
+    var tempData = TempData["IdRestaurant"]?.ToString();
+    if (Model.idRestaurant > 0 || (tempData != null && !tempData.Equals("0")))
+    {
+        title = "Restaurant employees";
+        // TempData["IdRestaurant"] = idRestaurant;
+    }
 
 }
 
@@ -20,7 +29,7 @@
 </head>
 <body>
     <div class="background-page">
-        <h1 class="title-text">Employees from all restaurants</h1>
+        <h1 class="title-text">@title</h1>
         <div class="line-black"></div>
         <div class="actions-menu">
             <form asp-controller="supervisor" asp-action="employeeForm" method="post">
@@ -221,6 +230,7 @@
                                             </tbody>
                                         </table>
                                     }
+                                    <input type="hidden" name="idRestaurant" value="@idRestaurant" />
                                     <h5>Actions:</h5>
                                     <table>
                                         <tr>

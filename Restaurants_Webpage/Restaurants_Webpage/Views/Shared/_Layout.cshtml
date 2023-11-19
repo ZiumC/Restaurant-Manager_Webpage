@@ -4,6 +4,7 @@
 
 @{
     string accessTokenName = "AccessToken";
+    string clearCookieName = "clear_temp_data";
     string jwtRoleField = "role";
     string jwtNameField = "name";
 
@@ -25,6 +26,8 @@
 
     var actionSucceeded = TempData["ActionSucceeded"];
     var actionFailed = TempData["ActionFailed"];
+
+   
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -44,12 +47,13 @@
 
                 @if (userRole == supervisorRoleName || userRole == ownerRoleName)
                 {
-                    <a class="navbar-brand" asp-area="" asp-controller="restaurant" asp-action="restaurants">
+                    <a id="main-menu-btn" class="navbar-brand" asp-area="" asp-controller="restaurant" asp-action="restaurants">
                         <img src="~/images/logo.png" />
                     </a>
-                } else
+                }
+                else
                 {
-                    <a class="navbar-brand" asp-area="" asp-controller="home" asp-action="index">
+                    <a id="main-btn" class="navbar-brand" asp-area="" asp-controller="home" asp-action="index">
                         <img src="~/images/logo.png" />
                     </a>
                 }
@@ -73,28 +77,28 @@
                             @if (userRole == supervisorRoleName || userRole == ownerRoleName)
                             {
                                 <li>
-                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="employees">Employees</a>
+                                    <a type="button" id="menu-btn-employees" class="btn btn-white" asp-area="" asp-controller="supervisor" asp-action="employees">Employees</a>
                                 </li>
                                 <li>
-                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="restaurant" asp-action="restaurants">Restaurants</a>
+                                    <a type="button" id="menu-btn-restaurants" class="btn btn-white" asp-area="" asp-controller="restaurant" asp-action="restaurants">Restaurants</a>
                                 </li>
                             }
                             else
                             {
                                 <li>
-                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="home" asp-action="index">Restaurants</a>
+                                    <a type="button" id="menu-btn-index" class="btn btn-white" asp-area="" asp-controller="home" asp-action="index">Restaurants</a>
                                 </li>
                             }
 
                             @if (userRole == clientRoleName)
                             {
                                 <li>
-                                    <a type="button" class="btn btn-white" asp-area="" asp-controller="client" asp-action="myReservations">Reservations</a>
+                                    <a type="button" id="menu-btn-reservation" class="btn btn-white" asp-area="" asp-controller="client" asp-action="myReservations">Reservations</a>
                                 </li>
                             }
 
                             <li>
-                                <a type="button" class="btn btn-white" asp-area="" asp-controller="user" asp-action="logout">Logout</a>
+                                <a type="button" id="menu-btn-logout" class="btn btn-white" asp-area="" asp-controller="user" asp-action="logout">Logout</a>
                             </li>
                         }
                         else
