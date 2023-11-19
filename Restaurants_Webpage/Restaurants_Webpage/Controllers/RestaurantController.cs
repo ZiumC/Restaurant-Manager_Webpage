@@ -467,5 +467,60 @@ namespace Restaurants_Webpage.Controllers
 
             return RedirectToAction("restaurants", "restaurant");
         }
+
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> SetDishData(BasicDishModel editDish)
+        {
+            if (editDish == null)
+            {
+                TempData["FormError"] = "Dish data is empty";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            if (string.IsNullOrEmpty(editDish.Name))
+            {
+                TempData["FormError"] = "Dish name can't be empty";
+                return RedirectToAction("dishForm", "restaurant", new { editDish.IdDish });
+            }
+
+            if (editDish.Price < 0)
+            {
+                TempData["FormError"] = "Dish price is invalid";
+                return RedirectToAction("dishForm", "restaurant", new { editDish.IdDish });
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("employees", "supervisor");
+            }
+
+            string url = string.Format(_restaurantDishDetailsUrl, editDish.IdDish);
+
+            var body = JsonContent.Create(new
+            {
+                name = editDish.Name,
+                price = editDish.Price
+            });
+
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.PUT, body, jwtUtils.GetJwtRequestCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["ActionSucceeded"] = $"Dish data has been modified!";
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
+
+            return RedirectToAction("restaurants", "restaurant");
+        }
     }
 }
