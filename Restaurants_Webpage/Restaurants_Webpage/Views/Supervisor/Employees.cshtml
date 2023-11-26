@@ -1,5 +1,7 @@
 ﻿@using Restaurants_Webpage.Models.UserModels.EmployeeModels;
 @model (IEnumerable<EmployeeModel> employees, int idRestaurant);
+@inject IHttpContextAccessor httpContextaccessor
+@using System.IdentityModel.Tokens.Jwt;
 
 @{
     ViewData["Title"] = $"All employees";
@@ -17,6 +19,20 @@
         // TempData["IdRestaurant"] = idRestaurant;
     }
 
+    string accessTokenName = "AccessToken";
+    string ownerRoleName = "OWNER";
+
+    string jwtRoleField = "role";
+    var httpContext = httpContextaccessor.HttpContext;
+    var accessToken = httpContext?.Request.Cookies[accessTokenName];
+
+    var userRole = "";
+    if (accessToken != null)
+    {
+        var tokenContent = new JwtSecurityTokenHandler().ReadToken(accessToken) as JwtSecurityToken;
+        userRole = tokenContent?.Claims.First(claim => claim.Type == jwtRoleField).Value;
+    }
+    
 }
 
 <!DOCTYPE html>
@@ -247,6 +263,24 @@
                                                         <input type="submit" value="Add Certificate" class="btn btn-success btn-functional action-menu" />
                                                     </form>
                                                 </div>
+
+                                                @if (userRole == ownerRoleName)
+                                                {
+                                                    <div class="btn-functional-container">
+                                                        <form id="rm-emp-rest" asp-controller="" asp-action="" method="post">
+                                                            <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
+                                                            <input type="hidden" name="idRestaurant" value="@idRestaurant" />
+                                                            <input type="button" id="rm-from-rest" value="Remove" class="btn btn-secondary btn-functional action-menu" onclick="showModal(this)" />
+                                                        </form>
+                                                    </div>
+
+                                                    <div class="btn-functional-container">
+                                                        <form asp-controller="" asp-action="" method="post">
+                                                            <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
+                                                            <input type="submit" value="Fire" class="btn btn-danger btn-functional action-menu" />
+                                                        </form>
+                                                    </div>
+                                                }
                                             </td>
                                         </tr>
                                     </table>

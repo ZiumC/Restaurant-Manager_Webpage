@@ -4,7 +4,7 @@
 
 @{
     string accessTokenName = "AccessToken";
-    string clearCookieName = "clear_temp_data";
+    // string clearCookieName = "clear_temp_data";
     string jwtRoleField = "role";
     string jwtNameField = "name";
 
@@ -27,7 +27,7 @@
     var actionSucceeded = TempData["ActionSucceeded"];
     var actionFailed = TempData["ActionFailed"];
 
-   
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -41,6 +41,14 @@
     <link rel="stylesheet" href="~/Restaurants_Webpage.styles.css" asp-append-version="true" />
 </head>
 <body>
+
+    <dialog>
+        <p id="message-dialog"></p>
+        <div class="text-center">
+            <button class="btn btn-secondary" id="y-btn">Yes</button>
+            <button id="n-btn">No</button>
+        </div>
+    </dialog>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-xl navbar-light bg-green justify-content-center box-shadow mb-3">
             <div class="container-fluid">
@@ -87,6 +95,13 @@
                             {
                                 <li>
                                     <a type="button" id="menu-btn-index" class="btn btn-white" asp-area="" asp-controller="home" asp-action="index">Restaurants</a>
+                                </li>
+                            }
+
+                            if (userRole == ownerRoleName)
+                            {
+                                <li>
+                                    <a type="button" id="menu-btn-index" class="btn btn-white" asp-area="complaints" asp-controller="owner" asp-action="index">Complaints</a>
                                 </li>
                             }
 
