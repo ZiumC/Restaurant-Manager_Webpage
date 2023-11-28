@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Restaurants_Webpage.Models.UserModels.AdministrativeModels.BasicModels;
+using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
+using Restaurants_Webpage.Models.UserModels.EmployeeModels;
 using Restaurants_Webpage.Utils;
 
 namespace Restaurants_Webpage.Controllers
@@ -7,19 +11,40 @@ namespace Restaurants_Webpage.Controllers
     public class OwnerController : Controller
     {
         public readonly IConfiguration _config;
-        public string _removeEmpFromRestaurantUrl { get; set; }
+        private readonly string _restaurantsUrl;
+        private readonly string _employeeDataUrl;
+        private readonly string _removeEmpFromRestaurantUrl;
 
         public OwnerController(IConfiguration config)
         {
             _config = config;
 
             string restaurantBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Restaurants"]);
+            string employeeBaseUrl = string.Concat(_config["Endpoints:BaseHost"], _config["Endpoints:Controller:Employees"]);
+
             string removeEmpFromRestaurantUrl = restaurantBaseUrl + "/{0}" + _config["Endpoints:Paths:Employee"] + "/{1}";
+            string employeeDataUrl = employeeBaseUrl + "/{0}";
+
             try
             {
+                if (string.IsNullOrEmpty(restaurantBaseUrl))
+                {
+                    throw new Exception("Restaurant base url can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(employeeBaseUrl))
+                {
+                    throw new Exception("Employee base url can't be empty");
+                }
+
                 if (string.IsNullOrEmpty(removeEmpFromRestaurantUrl))
                 {
-                    throw new Exception("Remove employee from restaurant Url can't be empty");
+                    throw new Exception("Remove employee from restaurant url can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(employeeDataUrl))
+                {
+                    throw new Exception("Remove employee from restaurant url can't be empty");
                 }
 
             }
@@ -28,7 +53,9 @@ namespace Restaurants_Webpage.Controllers
                 Console.WriteLine(ex.Message);
             }
 
+            _restaurantsUrl = restaurantBaseUrl;
             _removeEmpFromRestaurantUrl = removeEmpFromRestaurantUrl;
+            _employeeDataUrl = employeeDataUrl;
 
         }
 
@@ -72,6 +99,55 @@ namespace Restaurants_Webpage.Controllers
             }
 
             return RedirectToAction("employees", "supervisor", new { idRestaurant });
+        }
+
+        [Authorize(Roles = UserRolesUtility.Owner)]
+        public async Task<IActionResult> Employment(int idEmployee)
+        {
+            if (idEmployee <= 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            var restaurantsResponse =
+                await HttpRequestUtility.SendSecureRequestJwtAsync(_restaurantsUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+
+            string employeeUrl = string.Format(_employeeDataUrl, idEmployee);
+            var employeeResponse =
+                await HttpRequestUtility.SendSecureRequestJwtAsync(employeeUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+
+            if (restaurantsResponse == null || employeeUrl == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+
+
+            if (restaurantsResponse.IsSuccessStatusCode && employeeResponse.IsSuccessStatusCode)
+            {
+                var restaurantContentResponse = await restaurantsResponse.Content.ReadAsStringAsync();
+                var employeeContentResponse = await employeeResponse.Content.ReadAsStringAsync();
+
+                var restaurants = JsonConvert.DeserializeObject<IEnumerable<ExtendedRestaurantModel>>(restaurantContentResponse);
+                var employee = JsonConvert.DeserializeObject<EmployeeModel>(employeeContentResponse);
+
+                return View((restaurants, employee));
+
+            }
+            else
+            {
+                TempData["ActionFailed"] = HttpRequestUtility._defaultResponseMessage;
+                return RedirectToAction("employees", "supervisor");
+            }
         }
     }
 }

@@ -266,16 +266,12 @@
 
                                                 @if (userRole == ownerRoleName)
                                                 {
-                                                    @if (idRestaurant > 0)
-                                                    {
-                                                        <div class="btn-functional-container">
-                                                            <form id="rm-emp-rest=@employee.IdEmployee" asp-controller="owner" asp-action="removeEmployeeFromRestaurant" method="post">
-                                                                <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
-                                                                <input type="hidden" name="idRestaurant" value="@idRestaurant" />
-                                                                <input type="button" id="rm-from-rest=@employee.IdEmployee" value="Remove" class="btn btn-secondary btn-functional action-menu" onclick="showModal(this)" />
-                                                            </form>
-                                                        </div>
-                                                    }
+                                                    <div class="btn-functional-container">
+                                                        <form asp-controller="owner" asp-action="employment" method="post">
+                                                            <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
+                                                            <input type="submit" value="Employment" class="btn btn-secondary btn-functional action-menu" />
+                                                        </form>
+                                                    </div>
 
                                                     <div class="btn-functional-container">
                                                         <form asp-controller="" asp-action="" method="post">

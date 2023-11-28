@@ -1,0 +1,145 @@
+﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
+@using Restaurants_Webpage.Models.UserModels.EmployeeModels;
+@model (IEnumerable<ExtendedRestaurantModel> restaurants, EmployeeModel employee)
+
+@{
+    var restaurants = Model.restaurants;
+    var employee = Model.employee;
+
+    string employeeName = $"{employee.FirstName} {employee.LastName}";
+    string pageTitle = $"Assign or remove employee {employeeName} to/from restaurant";
+
+
+    var assignedByEmployee = restaurants
+                .Where(r => r.RestaurantWorkers.Any(e => e.IdEmployee == employee.IdEmployee))
+                .ToList()
+                .AsEnumerable();
+
+    var notAssignedByEmployee = restaurants
+                 .Where(r => !r.RestaurantWorkers.Any(e => e.IdEmployee == employee.IdEmployee))
+                 .ToList()
+                 .AsEnumerable();
+
+    ViewData["Title"] = pageTitle;
+
+    var formError = TempData["FormError"];
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="~/js/empForm.js"></script>
+</head>
+<body>
+    <div class="background-page">
+        @{
+            string title = $"Employment of {employeeName}.";
+        }
+        <h1 class="title-text">@title</h1>
+        <div class="line-black"></div>
+
+        <h5 class="heading">Employee @employeeName works in listed restaurants below:</h5>
+        @if (assignedByEmployee == null || assignedByEmployee.Count() <= 0)
+        {
+            <p>Nothing to show</p>
+        }
+        else
+        {
+            <table class="table table-striped text-center">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">City</th>
+                        <th scope="col">Employee type</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int rowCounter = 1;
+                        foreach (var restaurant in assignedByEmployee)
+                        {
+                            string restaurantName = restaurant.Name;
+                            string restaurantCity = restaurant.Address.City;
+                            string? employeeType = restaurant.RestaurantWorkers
+                            .Where(rw => rw.IdEmployee == employee.IdEmployee)
+                            .Select(rw => rw.EmployeeType)
+                            .FirstOrDefault();
+                            employeeType = string.IsNullOrEmpty(employeeType) ? "--" : employeeType;
+
+                            <tr>
+                                <th scope="row">@rowCounter</th>
+                                <td>@restaurantName</td>
+                                <td>@restaurantCity</td>
+                                <td>@employeeType</td>
+                                <td>
+                                    <div>
+                                        <form id="rm-emp-rest=@restaurant.IdRestaurant" asp-controller="" asp-action="" method="post">
+                                            <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
+                                            <input type="button" id="rm-from-rest=@restaurant.IdRestaurant" value="Remove" class="btn btn-danger btn-functional-table action-menu" onclick="showModal(this)" />
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            rowCounter++;
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+
+        <h5 class="heading">Employee @employeeName is not assigned yet in listed restaurants below:</h5>
+        @if (notAssignedByEmployee == null || notAssignedByEmployee.Count() <= 0)
+        {
+            <p>Nothing to show</p>
+        }
+        else
+        {
+            <table class="table table-striped text-center">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">City</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int rowCounter = 1;
+                        foreach (var restaurant in notAssignedByEmployee)
+                        {
+                            string restaurantName = restaurant.Name;
+                            string restaurantCity = restaurant.Address.City;
+                            <tr>
+                                <th scope="row">@rowCounter</th>
+                                <td>@restaurantName</td>
+                                <td>@restaurantCity</td>
+                                <td>--</td>
+                                <td>
+                                    <div>
+                                        <form id="rm-emp-rest=@restaurant.IdRestaurant" asp-controller="" asp-action="" method="post">
+                                            <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
+                                            <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
+                                            <input type="hidden" name="idType" value="@employee.IdEmployee" />
+                                            <input type="button" value="Assign" class="btn btn-success btn-functional-table action-menu"/>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            rowCounter++;
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+
+    </div>
+</body>
+</html>
