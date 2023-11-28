@@ -12,16 +12,16 @@ const yesButton = document.getElementById("y-btn");
 function showModal(e) {
     let formToSubmitId = ""
     let message = "Do you want to";
-    let buttonId = e.id.split("=")[0];
-    let employeeId = e.id.split("=")[1];
+    let buttonName = e.id.split("=")[0];
+    let buttonId = e.id.split("=")[1];
 
 
-    if (buttonId == "rm-from-rest") {
+    if (buttonName == "rm-from-rest") {
         message = message + " remove employee from restaurant?"
-        formToSubmitId = "rm-emp-rest=" + employeeId; 
+        formToSubmitId = "rm-emp-rest=" + buttonId; 
     } else if (id = "rm-emp-data") {
         message = message + " fire employee? This action can't be undone!"
-        formToSubmitId = "fire-emp-rest=" + employeeId; 
+        formToSubmitId = "fire-emp-rest=" + buttonId; 
     } else {
 
     }

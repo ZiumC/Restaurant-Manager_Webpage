@@ -13,6 +13,7 @@ namespace Restaurants_Webpage.Controllers
         public readonly IConfiguration _config;
         private readonly string _restaurantsUrl;
         private readonly string _employeeDataUrl;
+        private readonly string _employeeTypesUrl;
         private readonly string _removeEmpFromRestaurantUrl;
 
         public OwnerController(IConfiguration config)
@@ -24,6 +25,7 @@ namespace Restaurants_Webpage.Controllers
 
             string removeEmpFromRestaurantUrl = restaurantBaseUrl + "/{0}" + _config["Endpoints:Paths:Employee"] + "/{1}";
             string employeeDataUrl = employeeBaseUrl + "/{0}";
+            string employeeTypesUrl = restaurantBaseUrl + _config["Endpoints:Paths:Employee"] + _config["Endpoints:Paths:Types"];
 
             try
             {
@@ -47,6 +49,11 @@ namespace Restaurants_Webpage.Controllers
                     throw new Exception("Remove employee from restaurant url can't be empty");
                 }
 
+                if (string.IsNullOrEmpty(employeeTypesUrl))
+                {
+                    throw new Exception("Employee types url can't be empty");
+                }
+
             }
             catch (Exception ex)
             {
@@ -56,6 +63,7 @@ namespace Restaurants_Webpage.Controllers
             _restaurantsUrl = restaurantBaseUrl;
             _removeEmpFromRestaurantUrl = removeEmpFromRestaurantUrl;
             _employeeDataUrl = employeeDataUrl;
+            _employeeTypesUrl = employeeTypesUrl;
 
         }
 
@@ -124,7 +132,10 @@ namespace Restaurants_Webpage.Controllers
             var employeeResponse =
                 await HttpRequestUtility.SendSecureRequestJwtAsync(employeeUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
 
-            if (restaurantsResponse == null || employeeUrl == null)
+            var employeesTypesResponse =
+                await HttpRequestUtility.SendSecureRequestJwtAsync(_employeeTypesUrl, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+
+            if (restaurantsResponse == null || employeeResponse == null || employeesTypesResponse == null)
             {
                 TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
                 return RedirectToAction("restaurants", "restaurant");
@@ -132,15 +143,17 @@ namespace Restaurants_Webpage.Controllers
 
 
 
-            if (restaurantsResponse.IsSuccessStatusCode && employeeResponse.IsSuccessStatusCode)
+            if (restaurantsResponse.IsSuccessStatusCode && employeeResponse.IsSuccessStatusCode && employeesTypesResponse.IsSuccessStatusCode)
             {
                 var restaurantContentResponse = await restaurantsResponse.Content.ReadAsStringAsync();
                 var employeeContentResponse = await employeeResponse.Content.ReadAsStringAsync();
+                var employeesContentResponse = await employeesTypesResponse.Content.ReadAsStringAsync();
 
                 var restaurants = JsonConvert.DeserializeObject<IEnumerable<ExtendedRestaurantModel>>(restaurantContentResponse);
                 var employee = JsonConvert.DeserializeObject<EmployeeModel>(employeeContentResponse);
+                var types = JsonConvert.DeserializeObject<IEnumerable<BasicEmployeeTypesModel>>(employeesContentResponse);
 
-                return View((restaurants, employee));
+                return View((restaurants, employee, types));
 
             }
             else
