@@ -32,7 +32,7 @@
         var tokenContent = new JwtSecurityTokenHandler().ReadToken(accessToken) as JwtSecurityToken;
         userRole = tokenContent?.Claims.First(claim => claim.Type == jwtRoleField).Value;
     }
-    
+
 }
 
 <!DOCTYPE html>
@@ -266,18 +266,21 @@
 
                                                 @if (userRole == ownerRoleName)
                                                 {
-                                                    <div class="btn-functional-container">
-                                                        <form id="rm-emp-rest" asp-controller="" asp-action="" method="post">
-                                                            <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
-                                                            <input type="hidden" name="idRestaurant" value="@idRestaurant" />
-                                                            <input type="button" id="rm-from-rest" value="Remove" class="btn btn-secondary btn-functional action-menu" onclick="showModal(this)" />
-                                                        </form>
-                                                    </div>
+                                                    @if (idRestaurant > 0)
+                                                    {
+                                                        <div class="btn-functional-container">
+                                                            <form id="rm-emp-rest=@employee.IdEmployee" asp-controller="owner" asp-action="removeEmployeeFromRestaurant" method="post">
+                                                                <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
+                                                                <input type="hidden" name="idRestaurant" value="@idRestaurant" />
+                                                                <input type="button" id="rm-from-rest=@employee.IdEmployee" value="Remove" class="btn btn-secondary btn-functional action-menu" onclick="showModal(this)" />
+                                                            </form>
+                                                        </div>
+                                                    }
 
                                                     <div class="btn-functional-container">
                                                         <form asp-controller="" asp-action="" method="post">
                                                             <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
-                                                            <input type="submit" value="Fire" class="btn btn-danger btn-functional action-menu" />
+                                                            <input type="button" value="Fire" class="btn btn-danger btn-functional action-menu" onclick="showModal(this)" />
                                                         </form>
                                                     </div>
                                                 }

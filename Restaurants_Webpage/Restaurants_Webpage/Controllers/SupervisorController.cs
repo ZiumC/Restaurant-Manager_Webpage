@@ -113,7 +113,7 @@ namespace Restaurants_Webpage.Controllers
             {
                 url = string.Format(_restarantEmployeesUrl, idRestaurant);
             }
-            //needs to workin it but later
+            //needs to work on it but later
             //else if (idRestaurantString != null && !idRestaurantString.Equals("0"))
             //{
             //    url = string.Format(_restarantEmployeesUrl, idRestaurantString);
