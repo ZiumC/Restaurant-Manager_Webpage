@@ -1,10 +1,12 @@
-﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
+﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.BasicModels;
+@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
 @using Restaurants_Webpage.Models.UserModels.EmployeeModels;
-@model (IEnumerable<ExtendedRestaurantModel> restaurants, EmployeeModel employee)
+@model (IEnumerable<ExtendedRestaurantModel> restaurants, EmployeeModel employee, IEnumerable<BasicEmployeeTypesModel> employeeTypes)
 
 @{
     var restaurants = Model.restaurants;
     var employee = Model.employee;
+    var employeeTypes = Model.employeeTypes;
 
     string employeeName = $"{employee.FirstName} {employee.LastName}";
     string pageTitle = $"Assign or remove employee {employeeName} to/from restaurant";
@@ -42,10 +44,12 @@
         <h1 class="title-text">@title</h1>
         <div class="line-black"></div>
 
-        <h5 class="heading">Employee @employeeName works in listed restaurants below:</h5>
+        <h5 class="heading">@employeeName works in restaurants:</h5>
         @if (assignedByEmployee == null || assignedByEmployee.Count() <= 0)
         {
-            <p>Nothing to show</p>
+            <div class="row text-center">
+                <p>Employee is not hired anywhere</p>
+            </div>
         }
         else
         {
@@ -79,8 +83,9 @@
                                 <td>@employeeType</td>
                                 <td>
                                     <div>
-                                        <form id="rm-emp-rest=@restaurant.IdRestaurant" asp-controller="" asp-action="" method="post">
-                                            <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
+                                        <form id="rm-emp-rest=@restaurant.IdRestaurant" asp-controller="owner" asp-action="removeEmployeeFromRestaurant" method="post">
+                                            <input type="hidden" name="IdEmployee" value="@employee.IdEmployee" />
+                                            <input type="hidden" name="IdRestaurant" value="@restaurant.IdRestaurant" />
                                             <input type="button" id="rm-from-rest=@restaurant.IdRestaurant" value="Remove" class="btn btn-danger btn-functional-table action-menu" onclick="showModal(this)" />
                                         </form>
                                     </div>
@@ -93,10 +98,12 @@
             </table>
         }
 
-        <h5 class="heading">Employee @employeeName is not assigned yet in listed restaurants below:</h5>
+        <h5 class="heading">@employeeName is not assigned in restaurants:</h5>
         @if (notAssignedByEmployee == null || notAssignedByEmployee.Count() <= 0)
         {
-            <p>Nothing to show</p>
+            <div class="row text-center">
+                <p>Employee works in all restaurants</p>
+            </div>
         }
         else
         {
@@ -106,7 +113,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
                         <th scope="col">City</th>
-                        <th scope="col">Type</th>
+                        <th scope="col">Employee Type</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
@@ -121,14 +128,22 @@
                                 <th scope="row">@rowCounter</th>
                                 <td>@restaurantName</td>
                                 <td>@restaurantCity</td>
-                                <td>--</td>
+                                <td>
+                                    <select class="form-select">
+                                        <option value="0">Select Type</option>
+                                        @foreach (var type in employeeTypes)
+                                        {
+                                            <option value="@type.IdType">@type.Name</option>
+                                        }
+                                    </select>
+                                </td>
                                 <td>
                                     <div>
                                         <form id="rm-emp-rest=@restaurant.IdRestaurant" asp-controller="" asp-action="" method="post">
                                             <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
                                             <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                             <input type="hidden" name="idType" value="@employee.IdEmployee" />
-                                            <input type="button" value="Assign" class="btn btn-success btn-functional-table action-menu"/>
+                                            <input type="button" value="Assign" class="btn btn-success btn-functional-table action-menu" />
                                         </form>
                                     </div>
                                 </td>
