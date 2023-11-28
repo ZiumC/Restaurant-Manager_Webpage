@@ -110,6 +110,13 @@ namespace Restaurants_Webpage.Controllers
         }
 
         [Authorize(Roles = UserRolesUtility.Owner)]
+        public async Task<IActionResult> AssignEmployeeToRestaurant(int idEmployee, int idRestaurant, int idType) 
+        {
+
+            return RedirectToAction("restaurants", "restaurant");
+        }
+
+        [Authorize(Roles = UserRolesUtility.Owner)]
         public async Task<IActionResult> Employment(int idEmployee)
         {
             if (idEmployee <= 0)

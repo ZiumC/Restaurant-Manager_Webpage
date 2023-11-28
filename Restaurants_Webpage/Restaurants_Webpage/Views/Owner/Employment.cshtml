@@ -34,7 +34,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-    <script src="~/js/empForm.js"></script>
 </head>
 <body>
     <div class="background-page">
@@ -86,7 +85,9 @@
                                         <form id="rm-emp-rest=@restaurant.IdRestaurant" asp-controller="owner" asp-action="removeEmployeeFromRestaurant" method="post">
                                             <input type="hidden" name="IdEmployee" value="@employee.IdEmployee" />
                                             <input type="hidden" name="IdRestaurant" value="@restaurant.IdRestaurant" />
-                                            <input type="button" id="rm-from-rest=@restaurant.IdRestaurant" value="Remove" class="btn btn-danger btn-functional-table action-menu" onclick="showModal(this)" />
+                                            <input type="button" id="rm-from-rest=@restaurant.IdRestaurant"
+                                                   value="Remove" class="btn btn-danger btn-functional-table action-menu"
+                                                   onclick="showModal(this)" />
                                         </form>
                                     </div>
                                 </td>
@@ -124,12 +125,12 @@
                         {
                             string restaurantName = restaurant.Name;
                             string restaurantCity = restaurant.Address.City;
-                            <tr>
+                            <tr id="table-row-@rowCounter">
                                 <th scope="row">@rowCounter</th>
                                 <td>@restaurantName</td>
                                 <td>@restaurantCity</td>
                                 <td>
-                                    <select class="form-select">
+                                    <select id="types-options" class="form-select">
                                         <option value="0">Select Type</option>
                                         @foreach (var type in employeeTypes)
                                         {
@@ -139,11 +140,12 @@
                                 </td>
                                 <td>
                                     <div>
-                                        <form id="rm-emp-rest=@restaurant.IdRestaurant" asp-controller="" asp-action="" method="post">
+                                        <form id="assign-emp-rest=@rowCounter" asp-controller="owner" asp-action="assignEmployeeToRestaurant" method="post">
                                             <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
                                             <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
-                                            <input type="hidden" name="idType" value="@employee.IdEmployee" />
-                                            <input type="button" value="Assign" class="btn btn-success btn-functional-table action-menu" />
+                                            <input id="assign-emp-btn=@rowCounter"
+                                                   type="button" value="Assign" class="btn btn-success btn-functional-table action-menu"
+                                                   onclick="getSelectedItem(this)" />
                                         </form>
                                     </div>
                                 </td>
@@ -153,6 +155,9 @@
                     }
                 </tbody>
             </table>
+            <div class="row text-center">
+                <label id="error-assign" class="text-center error-text"></label>
+            </div>
         }
 
     </div>

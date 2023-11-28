@@ -5,8 +5,30 @@
 }, 7000);
 
 
-let isCanceled = false;
+
+function getSelectedItem(e) {
+    let number = e.id.split("=")[1];
+
+    let element = document.getElementById("types-options");
+    let value = element.value;
+
+    if (value == 0) {
+        document.getElementById("table-row-" + number).classList.add("table-danger");
+        document.getElementById("error-assign").innerHTML = "Please select an option.";
+    }
+
+    let form = document.getElementById("assign-emp-rest=" + number);
+    let idTypeField = document.createElement("input");
+    idTypeField.setAttribute("type", "hidden");
+    idTypeField.setAttribute("value", value);
+    idTypeField.setAttribute("name", "idType");
+    form.appendChild(idTypeField)
+
+    document.getElementById("assign-emp-rest=" + number).submit();
+}
+
 const dialog = document.querySelector("dialog");
+let isCanceled = false;
 const noButton = document.getElementById("n-btn");
 const yesButton = document.getElementById("y-btn");
 function showModal(e) {
@@ -18,10 +40,10 @@ function showModal(e) {
 
     if (buttonName == "rm-from-rest") {
         message = message + " remove employee from restaurant?"
-        formToSubmitId = "rm-emp-rest=" + buttonId; 
+        formToSubmitId = "rm-emp-rest=" + buttonId;
     } else if (id = "rm-emp-data") {
         message = message + " fire employee? This action can't be undone!"
-        formToSubmitId = "fire-emp-rest=" + buttonId; 
+        formToSubmitId = "fire-emp-rest=" + buttonId;
     } else {
 
     }
@@ -30,7 +52,6 @@ function showModal(e) {
 
     dialog.showModal();
     yesButton.addEventListener("click", () => {
-        dialog.close();
         document.getElementById(formToSubmitId).submit();
     });
 
