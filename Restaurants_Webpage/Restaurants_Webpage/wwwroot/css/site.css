@@ -128,10 +128,15 @@ div.input-group input {
 	padding-right: 5ex;
 }
 
-.actions-menu {
+.btn-actions-menu-container {
 	margin-left: 11ex;
 	margin-right: 11ex;
 	margin-bottom: 2ex;
+	display: flex;
+}
+
+div.btn-actions-menu-container form {
+	margin-right: 2ex;
 }
 
 .btn-medium {

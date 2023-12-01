@@ -31,9 +31,12 @@
 
         @if (userRole != null && userRole == ownerRoleName)
         {
-            <div class="actions-menu btn-functional-container">
+            <div class="btn-actions-menu-container">
                 <form asp-controller="restaurant" asp-action="restaurantForm" method="post">
                     <input type="submit" value="Add Restaurant" class="btn btn-success btn-functional action-menu" />
+                </form>
+                <form asp-controller="restaurant" asp-action="restaurantStats" method="post">
+                    <input type="submit" value="Stats" class="btn btn-info btn-functional action-menu" />
                 </form>
             </div>
         }

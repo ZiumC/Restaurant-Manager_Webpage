@@ -189,8 +189,6 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("restaurants", "restaurant");
             }
 
-
-
             if (restaurantsResponse.IsSuccessStatusCode && employeeResponse.IsSuccessStatusCode && employeesTypesResponse.IsSuccessStatusCode)
             {
                 var restaurantContentResponse = await restaurantsResponse.Content.ReadAsStringAsync();
