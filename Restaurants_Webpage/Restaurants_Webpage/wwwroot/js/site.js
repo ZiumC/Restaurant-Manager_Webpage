@@ -15,6 +15,7 @@ function getSelectedItem(e) {
     if (value == 0) {
         document.getElementById("table-row-" + number).classList.add("table-danger");
         document.getElementById("error-assign").innerHTML = "Please select an option.";
+        return;
     }
 
     let form = document.getElementById("assign-emp-rest=" + number);
