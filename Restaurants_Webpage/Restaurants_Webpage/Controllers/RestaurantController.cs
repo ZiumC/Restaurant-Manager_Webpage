@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Restaurants_Webpage.Models.CommonModels;
 using Restaurants_Webpage.Models.UserModels.AdministrativeModels.BasicModels;
 using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
 using Restaurants_Webpage.Models.UserModels.ClientModels.ClientRestaurantModels;
@@ -469,24 +470,24 @@ namespace Restaurants_Webpage.Controllers
         }
 
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> SetDishData(BasicDishModel editDish)
+        public async Task<IActionResult> SetDishData(BasicDishModel dishData)
         {
-            if (editDish == null)
+            if (dishData == null)
             {
                 TempData["FormError"] = "Dish data is empty";
                 return RedirectToAction("restaurants", "restaurant");
             }
 
-            if (string.IsNullOrEmpty(editDish.Name))
+            if (string.IsNullOrEmpty(dishData.Name))
             {
                 TempData["FormError"] = "Dish name can't be empty";
-                return RedirectToAction("dishForm", "restaurant", new { editDish.IdDish });
+                return RedirectToAction("dishForm", "restaurant", new { dishData.IdDish });
             }
 
-            if (editDish.Price < 0)
+            if (dishData.Price < 0)
             {
                 TempData["FormError"] = "Dish price is invalid";
-                return RedirectToAction("dishForm", "restaurant", new { editDish.IdDish });
+                return RedirectToAction("dishForm", "restaurant", new { dishData.IdDish });
             }
 
             HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
@@ -496,12 +497,12 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("employees", "supervisor");
             }
 
-            string url = string.Format(_restaurantDishDetailsUrl, editDish.IdDish);
+            string url = string.Format(_restaurantDishDetailsUrl, dishData.IdDish);
 
             var body = JsonContent.Create(new
             {
-                name = editDish.Name,
-                price = editDish.Price
+                name = dishData.Name,
+                price = dishData.Price
             });
 
             var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.PUT, body, jwtUtils.GetJwtRequestCookie());
@@ -559,5 +560,93 @@ namespace Restaurants_Webpage.Controllers
 
             return View();
         }
+
+        [Authorize(Roles = UserRolesUtility.Owner)]
+        public async Task<IActionResult> SetRestaurantData(BasicRestaurantModel restaurantData, CommonAddressModel restaurantAddressData)
+        {
+            var onActionFailed = RedirectToAction("restaurantForm", "restaurant");
+            if (restaurantData.IdRestaurant > 0)
+            {
+                onActionFailed = RedirectToAction("restaurantForm", "restaurant", new { restaurantData.IdRestaurant });
+            }
+
+            if (string.IsNullOrEmpty(restaurantData.Name))
+            {
+                TempData["FormError"] = "Restaurant name is empty";
+                return onActionFailed;
+            }
+
+            if (string.IsNullOrEmpty(restaurantData.Status))
+            {
+                TempData["FormError"] = "Restaurant status is empty";
+                return onActionFailed;
+            }
+
+            if (string.IsNullOrEmpty(restaurantAddressData.City))
+            {
+                TempData["FormError"] = "Restaurant address city is empty";
+                return onActionFailed;
+            }
+
+            if (string.IsNullOrEmpty(restaurantAddressData.Street))
+            {
+                TempData["FormError"] = "Restaurant address street is empty";
+                return onActionFailed;
+            }
+
+            if (string.IsNullOrEmpty(restaurantAddressData.BuildingNumber))
+            {
+                TempData["FormError"] = "Restaurant address building number is empty";
+                return onActionFailed;
+            }
+
+            if (restaurantData.BonusBudget < 0)
+            {
+                TempData["FormError"] = "Restaurant bonus budget is invalid";
+                return onActionFailed;
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("restaurant", "restaurants");
+            }
+
+            var body = JsonContent.Create(new BasicRestaurantModel
+            {
+                Name = restaurantData.Name,
+                Status = restaurantData.Status,
+                BonusBudget = restaurantData.BonusBudget,
+                Address = restaurantAddressData
+            });
+
+            string url = _restaurantsUrl;
+            Utils.HttpMethods method = Utils.HttpMethods.POST;
+            if (restaurantData.IdRestaurant > 0)
+            {
+                url = _restaurantsUrl + $"/{restaurantData.IdRestaurant}";
+                method = Utils.HttpMethods.PUT;
+            }
+
+            var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, method, body, jwtUtils.GetJwtRequestCookie());
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["ActionSucceeded"] = $"Changes has been saved successfully!";
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
+
+            return RedirectToAction("restaurants", "restaurant");
+        }
+
     }
 }

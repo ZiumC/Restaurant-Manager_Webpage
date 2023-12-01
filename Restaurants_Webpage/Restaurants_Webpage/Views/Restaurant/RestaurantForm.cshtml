@@ -5,6 +5,7 @@
     var restaurant = Model;
 
     string pageTitle = "Add new restaurant";
+
     if (restaurant != null)
     {
         pageTitle = $"Edit restarant {restaurant.Name}";
@@ -47,7 +48,7 @@
     <div class="background-page">
         <h1 class="title-text">@upperTitlePage</h1>
         <div class="line-black"></div>
-        <form asp-controller="restaurant" asp-action="setRestaurant" method="post">
+        <form asp-controller="restaurant" asp-action="setRestaurantData" method="post">
             <div class="row text-center">
                 <div class="col-md-6">
                     <div class="leftside-container">
