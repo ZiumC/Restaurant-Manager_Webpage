@@ -522,5 +522,42 @@ namespace Restaurants_Webpage.Controllers
 
             return RedirectToAction("restaurants", "restaurant");
         }
+
+        [Authorize(Roles = UserRolesUtility.Owner)]
+        public async Task<IActionResult> RestaurantForm(int idRestaurant)
+        {
+
+            if (idRestaurant > 0)
+            {
+                HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+                if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
+                {
+                    TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                    return RedirectToAction("restaurant", "restaurants");
+                }
+
+                string url = string.Format(_restaurantDetailsUrl, idRestaurant);
+                var response = await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.GET, null, jwtUtils.GetJwtRequestCookie());
+                if (response != null && response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var restaurantDetails = JsonConvert.DeserializeObject<ExtendedRestaurantModel>(responseContent);
+
+                    if (restaurantDetails != null)
+                    {
+                        return View(new BasicRestaurantModel
+                        {
+                            IdRestaurant = restaurantDetails.IdRestaurant,
+                            Name = restaurantDetails.Name,
+                            Status = restaurantDetails.Status,
+                            BonusBudget = restaurantDetails.BonusBudget,
+                            Address = restaurantDetails.Address
+                        });
+                    }
+                }
+            }
+
+            return View();
+        }
     }
 }

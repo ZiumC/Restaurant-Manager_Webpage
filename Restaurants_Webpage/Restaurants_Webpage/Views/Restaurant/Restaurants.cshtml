@@ -29,6 +29,14 @@
         <h1 class="title-text">Restaurants list</h1>
         <div class="line-black"></div>
 
+        @if (userRole != null && userRole == ownerRoleName)
+        {
+            <div class="actions-menu btn-functional-container">
+                <form asp-controller="restaurant" asp-action="restaurantForm" method="post">
+                    <input type="submit" value="Add Restaurant" class="btn btn-success btn-functional action-menu" />
+                </form>
+            </div>
+        }
 
         @if (restaurants == null || restaurants.Count() == 0)
         {
@@ -196,7 +204,7 @@
                                                 @if (userRole != null && userRole == ownerRoleName)
                                                 {
                                                     <div class="btn-functional-container">
-                                                        <form asp-controller="" asp-action="" method="post">
+                                                        <form asp-controller="restaurant" asp-action="restaurantForm" method="post">
                                                             <input type="hidden" name="idRestaurant" value="@restaurant.IdRestaurant" />
                                                             <input type="submit" value="Edit data" class="btn btn-warning btn-functional action-menu" />
                                                         </form>
