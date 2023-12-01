@@ -9,7 +9,7 @@
 function getSelectedItem(e) {
     let number = e.id.split("=")[1];
 
-    let element = document.getElementById("types-options");
+    let element = document.getElementById("types-options=" + number);
     let value = element.value;
 
     if (value == 0) {
@@ -24,7 +24,7 @@ function getSelectedItem(e) {
     idTypeField.setAttribute("name", "idType");
     form.appendChild(idTypeField)
 
-    document.getElementById("assign-emp-rest=" + number).submit();
+   document.getElementById("assign-emp-rest=" + number).submit();
 }
 
 const dialog = document.querySelector("dialog");

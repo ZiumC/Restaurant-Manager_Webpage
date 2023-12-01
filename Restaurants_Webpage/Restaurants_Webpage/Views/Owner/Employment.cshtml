@@ -130,7 +130,7 @@
                                 <td>@restaurantName</td>
                                 <td>@restaurantCity</td>
                                 <td>
-                                    <select id="types-options" class="form-select">
+                                    <select id="types-options=@rowCounter" class="form-select">
                                         <option value="0">Select Type</option>
                                         @foreach (var type in employeeTypes)
                                         {
