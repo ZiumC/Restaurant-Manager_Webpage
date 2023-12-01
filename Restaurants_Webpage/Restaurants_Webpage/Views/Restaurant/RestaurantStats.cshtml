@@ -1,0 +1,181 @@
+﻿@using Restaurants_Webpage.Models.UserModels.AdministrativeModels.ExtendedModels;
+@model IEnumerable<ExtendedRestaurantStats>;
+
+@{
+
+    ViewData["Title"] = "Restaurants stats";
+    string collapse = "collapse_";
+    string heading = "heading_";
+
+    IEnumerable<ExtendedRestaurantStats>? restaurants = Model;
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="~/js/stats.js"></script>
+</head>
+<body>
+    <div class="background-page">
+        <h1 class="title-text">Restaurants list</h1>
+        <div class="line-black"></div>
+
+        @if (restaurants == null || restaurants.Count() == 0)
+        {
+            <div class="text-center">
+                <h4>There is no restaurants to show.</h4>
+            </div>
+        }
+        else
+        {
+            int rowCount = 0;
+            foreach (var restaurant in restaurants)
+            {
+                <div class="card">
+                    <div class="header-card" id="@(heading + rowCount)">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="@("#" + collapse + rowCount)" aria-expanded="false" aria-controls="@(collapse + rowCount)">
+
+                                <table class="table-card-body-3-col table-restaurant-header">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <h5>Restaurant name:</h5>
+                                            </th>
+                                            <th>
+                                                <h5>Reservations:</h5>
+                                            </th>
+                                            <th>
+                                                <h5>Grade:</h5>
+                                            </th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                @restaurant.RestaurantName
+                                            </td>
+                                            <td>
+                                                @restaurant.ReservationsCount
+                                            </td>
+                                            <td>
+                                                @if (restaurant.RestaurantGrade == null)
+                                                {
+                                                <td>?/10</td>
+                                                }
+                                                else
+                                                {
+                                                <td>@String.Format("{0:0.00}", restaurant.RestaurantGrade)/10</td>
+                                                }
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="@(collapse + rowCount)" class="collapse" aria-labelledby="@(heading + rowCount)" data-parent="#accordion">
+                        <div class="line-black"></div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-6">
+                                    <div class="leftside-container">
+                                        <h5>Restaurant spendings:</h5>
+                                        <canvas id="spendings-chart-@rowCount" style="width:100%;max-width:100%"></canvas>
+                                        <script>
+                                            barYvalues = [@restaurant.Employees.TotalSalary, @restaurant.Employees.TotalBonus];
+                                            new Chart("spendings-chart-@rowCount", {
+                                                type: "bar",
+                                                data: {
+                                                    labels: barXvalues,
+                                                    datasets: [{
+                                                        backgroundColor: barColors,
+                                                        data: barYvalues
+                                                    }]
+                                                },
+                                                options: {
+                                                    legend: { display: false }
+                                                }
+                                            });
+                                        </script>
+                                        <table class="card-body-table">
+                                            <tr>
+                                                <td class="card-body-table-header">
+                                                    Total salary (PLN):
+                                                </td>
+                                                <td class="card-body-table-content">
+                                                    <div class="input-group">
+                                                        <input class="form-control" type="text" value="@string.Format("{0:0.00}", restaurant.Employees.TotalSalary)" disabled>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="card-body-table-header">
+                                                    Total bonus (PLN):
+                                                </td>
+                                                <td class="card-body-table-content">
+                                                    <div class="input-group">
+                                                        <input class="form-control" type="text" value="@string.Format("{0:0.00}", restaurant.Employees.TotalBonus)" disabled>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="rightside-container">
+                                        <h5>Complains stats:</h5>
+                                        <canvas id="complaint-chart-@rowCount" style="width:100%;max-width:100%"></canvas>
+                                        <script>
+                                             doughnutYvalues =
+                                                 [
+                                                     @restaurant.Complaints.NewComplaintsCount,
+                                                     @restaurant.Complaints.PendingComplaintsCount,
+                                                     @restaurant.Complaints.AcceptedComplaintsCount,
+                                                     @restaurant.Complaints.RejectedComplaintsCount,
+                                                 ];
+                                            new Chart("complaint-chart-@rowCount", {
+                                                type: "doughnut",
+                                                data: {
+                                                    labels: doughnutXvalues,
+                                                    datasets: [{
+                                                        backgroundColor: doughnutColors,
+                                                        data: doughnutYvalues,
+                                                    }]
+                                                },
+                                                options: {
+                                                    legend: { display: true }
+                                                }
+                                            });
+                                        </script>
+                                        <table class="card-body-table">
+                                            <tr>
+                                                <td class="card-body-table-header">
+                                                    Total complains:
+                                                </td>
+                                                <td class="card-body-table-content">
+                                                    <div class="input-group">
+                                                        <input class="form-control" type="text" value="@restaurant.Complaints.ComplaintsCount" disabled>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                rowCount++;
+            }
+        }
+    </div>
+</body>
+</html>
