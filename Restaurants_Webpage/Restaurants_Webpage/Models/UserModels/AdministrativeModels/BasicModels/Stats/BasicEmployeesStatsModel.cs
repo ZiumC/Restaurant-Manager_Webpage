@@ -2,8 +2,12 @@
 {
     public class BasicEmployeesStatsModel
     {
-        public int EmployeesCount { get; set; }
         public decimal TotalSalary { get; set; }
         public decimal TotalBonus { get; set; }
+        public int AllEmployees { get; set; }
+        public int Owner { get; set; }
+        public int Chef { get; set; }
+        public int ChefHelper { get; set; }
+        public int Waiter { get; set; }
     }
 }
