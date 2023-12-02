@@ -42,7 +42,7 @@ function showModal(e) {
     if (buttonName == "rm-from-rest") {
         message = message + " remove employee from restaurant?"
         formToSubmitId = "rm-emp-rest=" + buttonId;
-    } else if (id = "rm-emp-data") {
+    } else if (buttonName = "fire-from-rest") {
         message = message + " fire employee? This action can't be undone!"
         formToSubmitId = "fire-emp-rest=" + buttonId;
     } else {
