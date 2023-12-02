@@ -208,5 +208,44 @@ namespace Restaurants_Webpage.Controllers
                 return RedirectToAction("employees", "supervisor");
             }
         }
+
+        [Authorize(Roles = UserRolesUtility.Owner)]
+        public async Task<IActionResult> FireEmployee(int idEmployee)
+        {
+            if (idEmployee <= 0)
+            {
+                TempData["ActionFailed"] = "Did you modified request?";
+                return RedirectToAction("employees", "supervisor");
+            }
+
+            HttpJwtUtility jwtUtils = new HttpJwtUtility(_config, HttpContext);
+            if (string.IsNullOrEmpty(jwtUtils.GetJwtRequestCookie()))
+            {
+                TempData["ActionFailed"] = "Jwt is broken. Please logout and then login again!";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            string url = string.Format(_employeeDataUrl, idEmployee);
+            var response =
+                await HttpRequestUtility.SendSecureRequestJwtAsync(url, Utils.HttpMethods.DELETE, null, jwtUtils.GetJwtRequestCookie());
+
+            if (response == null)
+            {
+                TempData["ActionFailed"] = "Unable connect to server the external server, please try again later.";
+                return RedirectToAction("restaurants", "restaurant");
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["ActionSucceeded"] = $"Employee has been successfully fired!";
+            }
+            else
+            {
+                TempData["ActionFailed"] = await HttpRequestUtility.GetResponseMessage(response);
+            }
+
+            return RedirectToAction("employees", "supervisor");
+
+        }
     }
 }

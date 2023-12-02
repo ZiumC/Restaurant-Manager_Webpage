@@ -274,9 +274,11 @@
                                                     </div>
 
                                                     <div class="btn-functional-container">
-                                                        <form asp-controller="" asp-action="" method="post">
+                                                        <form id="fire-emp-rest=@employee.IdEmployee" asp-controller="owner" asp-action="fireEmployee" method="post">
                                                             <input type="hidden" name="idEmployee" value="@employee.IdEmployee" />
-                                                            <input type="button" value="Fire" class="btn btn-danger btn-functional action-menu" onclick="showModal(this)" />
+                                                            <input id="fire-from-rest=@employee.IdEmployee"
+                                                                   type ="button" value="Fire" class="btn btn-danger btn-functional action-menu" 
+                                                                   onclick="showModal(this)" />
                                                         </form>
                                                     </div>
                                                 }
