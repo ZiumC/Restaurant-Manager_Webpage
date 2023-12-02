@@ -331,6 +331,10 @@ table.table-restaurant-header {
 	margin-left: auto;
 }
 
+chart-canvas {
+	width: 100%;
+	max-width: 100%;
+}
 
 
 @media all and (max-width: 550px) {

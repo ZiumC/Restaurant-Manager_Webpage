@@ -2,9 +2,17 @@ let barXvalues = ["Total salary", "Total bonus"];
 let barYvalues = [0, 0];
 let barColors = ["#2B3F63", "#2C632B"];
 
-let doughnutXvalues = ["New", "Pending", "Accepted", "Rejected"];
-let doughnutYvalues = [0, 0, 0, 0]
-let doughnutColors = ["#2A8095", "#8F842F", "#3A2A80", "#8F3D2F"];
+let doughnutComplainsXvalues = ["New", "Pending", "Accepted", "Rejected"];
+let doughnutComplainsYvalues = [0, 0, 0, 0]
+let doughnutColors = ["#35A2BD", "#CFB43C", "#62B361", "#BE4648"];
+
+let doughnutEmployeesXvalues = ["Owner", "Chef", "Chef helper", "Waiter"];
+let doughnutEmployeesYvalues = [0, 0, 0, 0]
+let doughnutEmployeesColors = ["#833AB0", "#C2B02D", "#C78095", "#3055AB"];
+
+let pieReservationsXvalues = ["New", "Confirmed", "Cancelled", "Rated"];
+let pieReservationsYvalues = [0, 0, 0, 0]
+let pieReservationsColors = ["#C36AB2", "#5EAD4C", "#D8464C", "#4585CC"];
 
 Chart.plugins.register({
     afterDraw: function (chart) {
